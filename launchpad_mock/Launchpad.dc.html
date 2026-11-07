@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#fff;-webkit-font-smoothing:antialiased}
+a{color:#635BFF;text-decoration:none}a:hover{color:#5851E6}
+*{box-sizing:border-box}
+button{white-space:nowrap;flex:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+</style>
+</helmet>
+<div style="font-family:Inter,system-ui,sans-serif;color:#0A0A0A;min-height:100vh;background:#fff;line-height:1.5">
+
+<!-- LANDING NAV -->
+<sc-if value="{{ showLandingNav }}" hint-placeholder-val="{{ true }}">
+<div style="position:sticky;top:0;z-index:20;background:rgba(255,255,255,.88);backdrop-filter:blur(10px);border-bottom:1px solid #E3E8EE">
+<div style="max-width:1160px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;gap:16px">
+<div onClick="{{ goLanding }}" style="display:flex;align-items:center;gap:9px;font-weight:700;font-size:18px;letter-spacing:-.02em;cursor:pointer"><div style="width:26px;height:26px;border-radius:8px;background:#635BFF;display:grid;place-items:center"><div style="width:8px;height:8px;background:#fff;transform:rotate(45deg);border-radius:2px"></div></div>Launchpad</div>
+<div style="display:flex;gap:26px;font-size:14px;font-weight:500;color:#425466;overflow-x:auto;min-width:0">
+<span onClick="{{ goOnboard }}" style="cursor:pointer;white-space:nowrap" style-hover="color:#0A0A0A">For students</span>
+<span onClick="{{ goCreate }}" style="cursor:pointer;white-space:nowrap" style-hover="color:#0A0A0A">For businesses</span>
+<span onClick="{{ scrollHow }}" style="cursor:pointer;white-space:nowrap" style-hover="color:#0A0A0A">How it works</span>
+</div>
+<div style="display:flex;align-items:center;gap:16px;font-size:14px;font-weight:500;flex:none;white-space:nowrap">
+<span onClick="{{ goDash }}" style="cursor:pointer;color:#425466" style-hover="color:#0A0A0A">Log in</span>
+<button onClick="{{ goOnboard }}" style="border:0;background:#635BFF;color:#fff;font:600 14px Inter;padding:9px 16px;border-radius:999px;cursor:pointer" style-hover="background:#5851E6">Get started</button>
+</div></div></div>
+</sc-if>
+
+<!-- APP NAV -->
+<sc-if value="{{ showAppNav }}" hint-placeholder-val="{{ false }}">
+<div style="position:sticky;top:0;z-index:20;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid #E3E8EE">
+<div style="max-width:1160px;margin:0 auto;padding:0 24px;min-height:60px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
+<div style="display:flex;align-items:center;gap:28px;flex-wrap:wrap">
+<div onClick="{{ goLanding }}" style="display:flex;align-items:center;gap:9px;font-weight:700;font-size:17px;letter-spacing:-.02em;cursor:pointer"><div style="width:24px;height:24px;border-radius:7px;background:#635BFF;display:grid;place-items:center"><div style="width:7px;height:7px;background:#fff;transform:rotate(45deg);border-radius:2px"></div></div>Launchpad</div>
+<div style="display:flex;gap:4px">
+<sc-for list="{{ navItems }}" as="n" hint-placeholder-count="4">
+<span onClick="{{ n.go }}" style="cursor:pointer;font-size:14px;font-weight:500;padding:6px 11px;border-radius:8px;white-space:nowrap;color:{{ n.color }};background:{{ n.bg }}" style-hover="color:#0A0A0A">{{ n.label }}</span>
+</sc-for></div></div>
+<div style="display:flex;align-items:center;gap:14px">
+<div style="display:flex;background:#F6F9FC;border:1px solid #E3E8EE;border-radius:999px;padding:3px;font-size:12px;font-weight:600">
+<span onClick="{{ setStudent }}" style="cursor:pointer;padding:5px 12px;border-radius:999px;background:{{ stuBg }};color:{{ stuFg }};box-shadow:{{ stuSh }}">Student view</span>
+<span onClick="{{ setBusiness }}" style="cursor:pointer;padding:5px 12px;border-radius:999px;background:{{ busBg }};color:{{ busFg }};box-shadow:{{ busSh }}">Business view</span>
+</div>
+<div style="width:32px;height:32px;border-radius:50%;background:#EFEEFF;color:#635BFF;display:grid;place-items:center;font-weight:600;font-size:12px">{{ initials }}</div>
+</div></div></div>
+</sc-if>
+
+<!-- ============ 1 LANDING ============ -->
+<sc-if value="{{ pLanding }}" hint-placeholder-val="{{ true }}">
+<div>
+<div style="position:relative;overflow:hidden;background:radial-gradient(ellipse 60% 70% at 85% 0%,#D9D6FF 0%,transparent 60%),radial-gradient(ellipse 50% 60% at 10% 20%,#EFEEFF 0%,transparent 60%),radial-gradient(ellipse 40% 50% at 60% 100%,#E6F0FF 0%,transparent 70%),#fff">
+<div style="max-width:1160px;margin:0 auto;padding:88px 24px 96px;display:flex;flex-wrap:wrap;gap:56px;align-items:center">
+<div style="flex:1 1 440px;min-width:0">
+<div style="display:inline-flex;align-items:center;gap:8px;white-space:nowrap;max-width:100%;background:#fff;border:1px solid #E3E8EE;border-radius:999px;padding:5px 12px 5px 6px;font-size:13px;font-weight:500;color:#425466;margin-bottom:24px"><span style="background:#EFEEFF;color:#635BFF;border-radius:999px;padding:2px 8px;font-size:11px;font-weight:600">New</span>AI-scoped projects for small businesses</div>
+<h1 style="font-size:clamp(40px,6vw,68px);line-height:1.02;letter-spacing:-.04em;font-weight:700;margin:0 0 20px">Your first real experience, verified.</h1>
+<p style="font-size:19px;color:#425466;margin:0 0 32px;max-width:480px;line-height:1.6">Complete real projects for local businesses. Earn skills employers can trust.</p>
+<div style="display:flex;gap:12px;flex-wrap:wrap">
+<button onClick="{{ goOnboard }}" style="border:0;background:#635BFF;color:#fff;font:600 15px Inter;padding:14px 24px;border-radius:999px;cursor:pointer;box-shadow:0 4px 14px rgba(99,91,255,.35)" style-hover="background:#5851E6">I'm a student</button>
+<button onClick="{{ goCreate }}" style="border:1px solid #E3E8EE;background:#fff;color:#0A0A0A;font:600 15px Inter;padding:14px 24px;border-radius:999px;cursor:pointer" style-hover="border-color:#C1C9D2">I'm a business</button>
+</div></div>
+<div style="flex:1 1 400px;min-width:0;position:relative">
+<div style="background:#fff;border:1px solid #E3E8EE;border-radius:14px;box-shadow:0 30px 60px -20px rgba(50,50,93,.25),0 18px 36px -18px rgba(0,0,0,.2);padding:22px">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><span style="font-size:13px;color:#425466;font-weight:500;white-space:nowrap">Sunrise Bakery · Brampton</span><span style="background:#EFEEFF;color:#635BFF;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;white-space:nowrap">96% match</span></div>
+<div style="font-size:20px;font-weight:600;letter-spacing:-.02em;margin-bottom:12px">Bakery website</div>
+<div style="display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap"><span style="background:#F6F9FC;border:1px solid #E3E8EE;font-size:12px;padding:3px 9px;border-radius:6px;color:#425466">HTML</span><span style="background:#F6F9FC;border:1px solid #E3E8EE;font-size:12px;padding:3px 9px;border-radius:6px;color:#425466">CSS</span><span style="background:#F6F9FC;border:1px solid #E3E8EE;font-size:12px;padding:3px 9px;border-radius:6px;color:#425466">Figma</span></div>
+<div style="display:flex;gap:20px;font-size:13px;color:#425466;padding-top:14px;border-top:1px solid #E3E8EE"><span><b style="color:#0A0A0A">$400</b> stipend</span><span><b style="color:#0A0A0A">20</b> hours</span><span><b style="color:#0A0A0A">3</b> milestones</span></div>
+</div>
+<div style="position:absolute;left:-18px;bottom:-34px;background:#fff;border:1px solid #E3E8EE;border-radius:12px;box-shadow:0 18px 30px -12px rgba(50,50,93,.25);padding:12px 16px;display:flex;align-items:center;gap:10px">
+<svg width="22" height="22" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#635BFF"/><path d="M4.5 8.2l2.3 2.3 4.7-4.8" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<div><div style="font-size:13px;font-weight:600">Google UX Design</div><div style="font-size:12px;color:#425466">Issuer verified</div></div></div>
+</div></div></div>
+
+<div id="how" style="max-width:1160px;margin:0 auto;padding:96px 24px 40px">
+<div style="font-size:13px;font-weight:600;color:#635BFF;margin-bottom:10px">How it works</div>
+<h2 style="font-size:38px;letter-spacing:-.035em;line-height:1.1;margin:0 0 44px;max-width:560px">From profile to proof of work in three steps.</h2>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px">
+<sc-for list="{{ steps }}" as="s" hint-placeholder-count="3">
+<div style="border:1px solid #E3E8EE;border-radius:12px;padding:26px;background:#fff">
+<div style="width:34px;height:34px;border-radius:9px;background:#EFEEFF;color:#635BFF;font-weight:700;display:grid;place-items:center;margin-bottom:18px">{{ s.n }}</div>
+<div style="font-size:18px;font-weight:600;letter-spacing:-.02em;margin-bottom:8px">{{ s.t }}</div>
+<div style="font-size:15px;color:#425466;line-height:1.65">{{ s.d }}</div></div>
+</sc-for></div></div>
+
+<div style="background:#F6F9FC;margin-top:56px;border-top:1px solid #E3E8EE;border-bottom:1px solid #E3E8EE">
+<div style="max-width:1160px;margin:0 auto;padding:88px 24px;display:flex;flex-wrap:wrap;gap:56px;align-items:center">
+<div style="flex:1 1 380px;min-width:0">
+<div style="font-size:13px;font-weight:600;color:#635BFF;margin-bottom:10px">Verified skills</div>
+<h2 style="font-size:38px;letter-spacing:-.035em;line-height:1.1;margin:0 0 16px">Every skill shows how it was proven.</h2>
+<p style="font-size:17px;color:#425466;margin:0;line-height:1.65">Employers see three clear trust levels on every profile, so a certification from an issuer is never confused with a self-reported skill.</p></div>
+<div style="flex:1 1 380px;min-width:0;display:flex;flex-direction:column;gap:12px">
+<sc-for list="{{ trustLevels }}" as="t" hint-placeholder-count="3">
+<div style="background:#fff;border:1px solid #E3E8EE;border-radius:12px;padding:18px 20px;display:flex;gap:14px;align-items:center;box-shadow:0 2px 5px rgba(50,50,93,.05)">
+<svg width="26" height="26" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="{{ t.fill }}" stroke="{{ t.stroke }}" stroke-width="2"/><path d="M4.5 8.2l2.3 2.3 4.7-4.8" stroke="{{ t.tick }}" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<div><div style="font-weight:600;font-size:15px">{{ t.name }}</div><div style="font-size:14px;color:#425466">{{ t.desc }}</div></div></div>
+</sc-for></div></div></div>
+
+<div style="max-width:1160px;margin:0 auto;padding:96px 24px">
+<div style="border:1px solid #E3E8EE;border-radius:16px;padding:44px;display:flex;flex-wrap:wrap;gap:40px;align-items:center;box-shadow:0 2px 5px rgba(50,50,93,.06)">
+<div style="flex:1 1 340px;min-width:0">
+<div style="font-size:13px;font-weight:600;color:#635BFF;margin-bottom:10px">For businesses</div>
+<h2 style="font-size:32px;letter-spacing:-.03em;line-height:1.15;margin:0 0 14px">Describe the work in plain words.</h2>
+<p style="font-size:16px;color:#425466;margin:0 0 24px;line-height:1.65">Our AI turns your request into deliverables, milestones, hours, and a fair stipend. You review, edit, and publish.</p>
+<button onClick="{{ goCreate }}" style="border:0;background:#635BFF;color:#fff;font:600 14px Inter;padding:11px 20px;border-radius:999px;cursor:pointer" style-hover="background:#5851E6">Post a project</button></div>
+<div style="flex:1 1 340px;min-width:0;background:#F6F9FC;border:1px solid #E3E8EE;border-radius:12px;padding:18px">
+<div style="font-size:12px;color:#425466;margin-bottom:8px;font-weight:500">Describe what you need</div>
+<div style="background:#fff;border:1px solid #E3E8EE;border-radius:8px;padding:12px 14px;font-size:14px;color:#0A0A0A;margin-bottom:12px">I need a simple website with our menu, hours, and an online order form.</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;font-size:12px"><span style="background:#EFEEFF;color:#635BFF;padding:3px 9px;border-radius:999px;font-weight:600">3 milestones</span><span style="background:#EFEEFF;color:#635BFF;padding:3px 9px;border-radius:999px;font-weight:600">~20 hours</span><span style="background:#EFEEFF;color:#635BFF;padding:3px 9px;border-radius:999px;font-weight:600">$400 stipend</span></div></div>
+</div></div>
+
+<div style="background:#0A0A0A;color:#fff;text-align:center;padding:96px 24px">
+<h2 style="font-size:42px;letter-spacing:-.04em;line-height:1.08;margin:0 auto 16px;max-width:560px">Start building proof of work today.</h2>
+<p style="color:#A8B3C2;font-size:17px;margin:0 0 32px">Free for students. Free to post your first project.</p>
+<div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+<button onClick="{{ goOnboard }}" style="border:0;background:#635BFF;color:#fff;font:600 15px Inter;padding:13px 24px;border-radius:999px;cursor:pointer" style-hover="background:#5851E6">I'm a student</button>
+<button onClick="{{ goCreate }}" style="border:1px solid #3a4352;background:transparent;color:#fff;font:600 15px Inter;padding:13px 24px;border-radius:999px;cursor:pointer" style-hover="border-color:#fff">I'm a business</button></div></div>
+<div style="max-width:1160px;margin:0 auto;padding:36px 24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;font-size:13px;color:#425466"><span style="font-weight:600;color:#0A0A0A">Launchpad</span><span style="display:flex;gap:22px;flex-wrap:wrap"><span>About</span><span>Trust &amp; verification</span><span>Privacy</span><span>Terms</span></span><span>© 2026 Launchpad</span></div>
+</div>
+</sc-if>
+
+<!-- ============ 2 ONBOARDING ============ -->
+<sc-if value="{{ pOnboard }}" hint-placeholder-val="{{ false }}">
+<div style="min-height:100vh;background:#F6F9FC">
+<div style="height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:#fff;border-bottom:1px solid #E3E8EE">
+<div onClick="{{ goLanding }}" style="display:flex;align-items:center;gap:9px;font-weight:700;font-size:17px;letter-spacing:-.02em;cursor:pointer"><div style="width:24px;height:24px;border-radius:7px;background:#635BFF;display:grid;place-items:center"><div style="width:7px;height:7px;background:#fff;transform:rotate(45deg);border-radius:2px"></div></div>Launchpad</div>
+<span style="font-size:13px;color:#425466">Step {{ obNum }} of 4</span></div>
+<div style="max-width:620px;margin:0 auto;padding:48px 24px">
+<div style="display:flex;gap:6px;margin-bottom:32px">
+<sc-for list="{{ obBars }}" as="b" hint-placeholder-count="4"><div style="flex:1;height:4px;border-radius:2px;background:{{ b.c }}"></div></sc-for></div>
+<div style="background:#fff;border:1px solid #E3E8EE;border-radius:14px;padding:36px;box-shadow:0 4px 12px rgba(50,50,93,.06)">
+<h1 style="font-size:28px;letter-spacing:-.03em;margin:0 0 6px;line-height:1.15">{{ obTitle }}</h1>
+<p style="color:#425466;margin:0 0 26px;font-size:15px">{{ obSub }}</p>
+<div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:32px">
+<sc-for list="{{ obOptions }}" as="o" hint-placeholder-count="6">
+<span onClick="{{ o.click }}" style="cursor:pointer;font-size:14px;font-weight:500;padding:10px 16px;border-radius:10px;border:1px solid {{ o.bd }};background:{{ o.bg }};color:{{ o.fg }}">{{ o.label }}</span>
+</sc-for></div>
+<div style="display:flex;justify-content:space-between;align-items:center">
+<span onClick="{{ obBack }}" style="cursor:pointer;font-size:14px;font-weight:500;color:#425466;visibility:{{ backVis }}">Back</span>
+<button onClick="{{ obNext }}" style="border:0;background:#635BFF;color:#fff;font:600 14px Inter;padding:11px 22px;border-radius:999px;cursor:pointer" style-hover="background:#5851E6">{{ obBtn }}</button></div>
+</div></div></div>
+</sc-if>
+
+<!-- ============ 3 STUDENT DASHBOARD ============ -->
+<sc-if value="{{ pDash }}" hint-placeholder-val="{{ false }}">
+<div style="background:#F6F9FC;min-height:100vh"><div style="max-width:1160px;margin:0 auto;padding:36px 24px 72px">
+<div style="margin-bottom:28px"><h1 style="font-size:30px;letter-spacing:-.03em;margin:0 0 4px">Welcome back, Aisha</h1><div style="color:#425466;font-size:15px">2nd year Computer Science · York University</div></div>
+<div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start">
+<div style="flex:2 1 520px;min-width:0">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><div style="font-weight:600;font-size:16px">Matched projects</div><div style="font-size:13px;color:#425466">{{ projCount }} matches for your skills</div></div>
+<div style="display:flex;flex-direction:column;gap:14px">
+<sc-for list="{{ projects }}" as="p" hint-placeholder-count="4">
+<div onClick="{{ p.open }}" style="cursor:pointer;background:#fff;border:1px solid #E3E8EE;border-radius:12px;padding:22px;box-shadow:0 1px 3px rgba(50,50,93,.05);transition:box-shadow .15s,border-color .15s" style-hover="box-shadow:0 8px 24px rgba(50,50,93,.12);border-color:#D3D8FF">
+<div style="display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:6px"><span style="font-size:13px;color:#425466;font-weight:500">{{ p.biz }} · {{ p.place }}</span><span style="background:#EFEEFF;color:#635BFF;font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;white-space:nowrap">{{ p.match }}% match</span></div>
+<div style="font-size:19px;font-weight:600;letter-spacing:-.02em;margin-bottom:12px">{{ p.title }}</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px">
+<sc-for list="{{ p.skills }}" as="s" hint-placeholder-count="3"><span style="background:{{ s.bg }};border:1px solid {{ s.bd }};color:{{ s.fg }};font-size:12px;padding:3px 9px;border-radius:6px">{{ s.t }}</span></sc-for></div>
+<div style="display:flex;gap:22px;font-size:13px;color:#425466;padding-top:14px;border-top:1px solid #E3E8EE;flex-wrap:wrap"><span><b style="color:#0A0A0A">{{ p.pay }}</b></span><span>{{ p.hours }} hours</span><span>Due {{ p.deadline }}</span></div>
+</div></sc-for></div></div>
+
+<div style="flex:1 1 300px;min-width:0;display:flex;flex-direction:column;gap:16px">
+<div style="background:#fff;border:1px solid #E3E8EE;border-radius:12px;padding:20px">
+<div style="display:flex;justify-content:space-between;margin-bottom:10px"><span style="font-weight:600;font-size:14px">Profile strength</span><span style="font-weight:600;font-size:14px;color:#635BFF">{{ strength }}%</span></div>
+<div style="height:8px;background:#EFEEFF;border-radius:4px;overflow:hidden;margin-bottom:12px"><div style="height:100%;width:{{ strength }}%;background:#635BFF;border-radius:4px;transition:width .4s"></div></div>
+<div style="font-size:13px;color:#425466;margin-bottom:12px">Add one more verified skill to reach 90%.</div>
+<span onClick="{{ goSkills }}" style="font-size:13px;font-weight:600;color:#635BFF;cursor:pointer">Add a certification →</span></div>
+<div style="background:#fff;border:1px solid #E3E8EE;border-radius:12px;padding:20px">
+<div style="font-weight:600;font-size:14px;margin-bottom:14px">Recommended certifications</div>
+<div style="display:flex;flex-direction:column;gap:12px">
+<sc-for list="{{ recCerts }}" as="c" hint-placeholder-count="2">
+<div onClick="{{ goSkills }}" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px"><div><div style="font-size:14px;font-weight:500">{{ c.name }}</div><div style="font-size:12px;color:#425466">{{ c.by }}</div></div><span style="font-size:12px;color:#635BFF;font-weight:600">View</span></div>
+</sc-for></div></div>
+<div style="background:#fff;border:1px solid #E3E8EE;border-radius:12px;padding:20px">
+<div style="font-weight:600;font-size:14px;margin-bottom:14px">Active projects</div>
+<div onClick="{{ goWork }}" style="cursor:pointer;border:1px solid #E3E8EE;border-radius:10px;padding:14px" style-hover="border-color:#D3D8FF;background:#FAFAFF">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span style="font-size:14px;font-weight:600">Bakery website</span><span style="background:#EFEEFF;color:#635BFF;font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px">In progress</span></div>
+<div style="font-size:12px;color:#425466;margin-bottom:10px">Sunrise Bakery · Milestone 2 of 3</div>
+<div style="height:5px;background:#EFEEFF;border-radius:3px"><div style="height:100%;width:45%;background:#635BFF;border-radius:3px"></div></div></div></div>
+</div></div></div></div>
+</sc-if>
+
+<!-- ============ 4 PROJECT DETAIL ============ -->
+<sc-if value="{{ pProject }}" hint-placeholder-val="{{ false }}">
+<div style="background:#F6F9FC;min-height:100vh"><div style="max-width:1160px;margin:0 auto;padding:28px 24px 72px">
+<span onClick="{{ goDash }}" style="font-size:13px;color:#425466;cursor:pointer;font-weight:500" >← Back to matched projects</span>
+<div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start;margin-top:16px">
+<div style="flex:2 1 520px;min-width:0;display:flex;flex-direction:column;gap:16px">
+<div style="background:#fff;border:1px solid #E3E8EE;border-radius:12px;padding:30px">
+<div style="display:flex;gap:8px;align-items:center;margin-bottom:12px"><span style="background:#F0F2F5;color:#425466;font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px">Open</span><span style="background:#EFEEFF;color:#635BFF;font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px">{{ cur.match }}% match</span></div>
+<h1 style="font-size:32px;letter-spacing:-.035em;line-height:1.1;margin:0 0 12px">{{ cur.title }}</h1>
+<p style="font-size:16px;color:#425466;line-height:1.7;margin:0">{{ cur.desc }}</p></div>
+<div style="background:#fff;border:1px solid #E3E8EE;border-radius:12px;padding:26px">
+<div style="font-weight:600;font-size:16px;margin-bottom:14px">Deliverables</div>
+<div style="display:flex;flex-direction:column;gap:11px">
+<sc-for list="{{ cur.dels }}" as="d" hint-placeholder-count="4"><div style="display:flex;gap:10px;font-size:15px;color:#425466;align-items:flex-start"><svg width="18" height="18" viewBox="0 0 16 16" style="flex:none;margin-top:2px"><circle cx="8" cy="8" r="7.5" fill="#EFEEFF"/><path d="M4.8 8.2l2 2 4-4.2" stroke="#635BFF" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>{{ d.t }}</span></div></sc-for></div></div>
+<div style="background:#fff;border:1px solid #E3E8EE;border-radius:12px;padding:26px">
+<div style="font-weight:600;font-size:16px;margin-bottom:16px">Milestones</div>
+<div style="display:flex;flex-direction:column;gap:0">
+<sc-for list="{{ cur.mss }}" as="m" hint-placeholder-count="3"><div style="display:flex;gap:16px;padding:14px 0;border-top:{{ m.bt }}"><div style="width:28px;height:28px;border-radius:50%;background:#EFEEFF;color:#635BFF;font-size:13px;font-weight:700;display:grid;place-items:center;flex:none">{{ m.n }}</div><div style="flex:1"><div style="font-weight:600;font-size:15px">{{ m.t }}</div><div style="font-size:13px;color:#425466">{{ m.d }}</div></div><div style="font-size:14px;font-weight:600">{{ m.amt }}</div></div></sc-for></div></div>
+<div style="background:#fff;border:1px solid #E3E8EE;border-radius:12px;padding:26px">
+<div style="font-weight:600;font-size:16px;margin-bottom:14px">Required skills</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><sc-for list="{{ cur.skills }}" as="s" hint-placeholder-count="3"><span style="background:{{ s.bg }};border:1px solid {{ s.bd }};color:{{ s.fg }};font-size:13px;padding:5px 12px;border-radius:8px;font-weight:500">{{ s.t }}</span></sc-for></div></div>
+</div>
+<div style="flex:1 1 300px;min-width:0;display:flex;flex-direction:column;gap:16px;position:sticky;top:80px">
+<div style="background:#fff;border:1px solid #E3E8EE;border-radius:12px;padding:24px;box-shadow:0 8px 24px rgba(50,50,93,.08)">
+<div style="font-size:28px;font-weight:700;letter-spacing:-.03em">{{ cur.pay }}</div>
+<div style="display:flex;flex-direction:column;gap:10px;font-size:14px;color:#425466;margin:16px 0 22px">
+<div style="display:flex;justify-content:space-between"><span>Estimated hours</span><b style="color:#0A0A0A">{{ cur.hours }}</b></div>
+<div style="display:flex;justify-content:space-between"><span>Deadline</span><b style="color:#0A0A0A">{{ cur.deadline }}</b></div>
+<div style="display:flex;justify-content:space-between"><span>Milestones</span><b style="color:#0A0A0A">3</b></div></div>
+<button onClick="{{ openApply }}" style="width:100%;border:0;background:#635BFF;color:#fff;font:600 15px Inter;padding:13px;border-radius:10px;cursor:pointer" style-hover="background:#5851E6">Apply</button>
+<div style="font-size:12px;color:#425466;text-align:center;margin-top:10px">AI drafts your proposal. You edit before sending.</div></div>
+<div style="background:#fff;border:1px solid #E3E8EE;border-radius:12px;padding:22px">
+<div style="font-size:12px;font-weight:600;color:#425466;margin-bottom:12px">ABOUT THE BUSINESS</div>
+<div style="display:flex;gap:12px;align-items:center;margin-bottom:12px"><div style="width:40px;height:40px;border-radius:10px;background:#EFEEFF;color:#635BFF;font-weight:700;display:grid;place-items:center">{{ cur.init }}</div><div><div style="font-weight:600;font-size:15px;display:flex;gap:6px;align-items:center">{{ cur.biz }}<svg width="15" height="15" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#635BFF"/><path d="M4.5 8.2l2.3 2.3 4.7-4.8" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div style="font-size:13px;color:#425466">{{ cur.place }}</div></div></div>
+<div style="font-size:14px;color:#425466;line-height:1.6">{{ cur.about }}</div></div>
+</div></div></div>
+
+<sc-if value="{{ applyOpen }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ closeApply }}" style="position:fixed;inset:0;background:rgba(10,10,10,.45);z-index:50;display:grid;place-items:center;padding:20px">
+<div onClick="{{ stop }}" style="background:#fff;border-radius:14px;width:100%;max-width:600px;max-height:90vh;overflow:auto;padding:30px;box-shadow:0 30px 60px rgba(0,0,0,.3);animation:rise .25s">
+<sc-if value="{{ notSent }}" hint-placeholder-val="{{ true }}">
+<div>
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="background:#EFEEFF;color:#635BFF;font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px">AI draft</span></div>
+<h2 style="font-size:22px;letter-spacing:-.025em;margin:0 0 4px">Proposal for {{ cur.biz }}</h2>
+<p style="font-size:14px;color:#425466;margin:0 0 16px">Drafted from your profile and verified skills. Edit anything before sending.</p>
+<textarea value="{{ proposal }}" onChange="{{ setProposal }}" style="width:100%;height:240px;border:1px solid #E3E8EE;border-radius:10px;padding:14px;font:15px/1.6 Inter;color:#0A0A0A;resize:vertical;outline:none"></textarea>
+<div style="display:flex;justify-content:flex-end;gap:10px;margin-top:18px">
+<button onClick="{{ closeApply }}" style="border:1px solid #E3E8EE;background:#fff;font:600 14px Inter;padding:10px 18px;border-radius:999px;cursor:pointer" style-hover="border-color:#C1C9D2">Cancel</button>
+<button onClick="{{ sendProposal }}" style="border:0;background:#635BFF;color:#fff;font:600 14px Inter;padding:10px 20px;border-radius:999px;cursor:pointer" style-hover="background:#5851E6">Send proposal</button></div></div>
+</sc-if>
+<sc-if value="{{ sent }}" hint-placeholder-val="{{ false }}">
+<div style="text-align:center;padding:16px 0 6px">
+<div style="width:52px;height:52px;border-radius:50%;background:#E6F6EE;display:grid;place-items:center;margin:0 auto 16px"><svg width="24" height="24" viewBox="0 0 16 16"><path d="M3.5 8.4l3 3 6-6.2" stroke="#0B7A4B" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+<h2 style="font-size:22px;letter-spacing:-.025em;margin:0 0 6px">Proposal sent</h2>
+<p style="font-size:14px;color:#425466;margin:0 0 22px">{{ cur.biz }} will review it within 48 hours. For this demo, you can jump into the workspace.</p>
+<div style="display:flex;gap:10px;justify-content:center"><button onClick="{{ goDash }}" style="border:1px solid #E3E8EE;background:#fff;font:600 14px Inter;padding:10px 18px;border-radius:999px;cursor:pointer">Back to feed</button><button onClick="{{ goWork }}" style="border:0;background:#635BFF;color:#fff;font:600 14px Inter;padding:10px 20px;border-radius:999px;cursor:pointer" style-hover="background:#5851E6">Open workspace</button></div></div>
+</sc-if>
+</div></div>
+</sc-if>
+</div>
+</sc-if>
+
+<!-- ============ 5 WORKSPACE ============ -->
+<sc-if value="{{ pWork }}" hint-placeholder-val="{{ false }}">
+<div style="background:#F6F9FC;min-height:100vh"><div style="max-width:1160px;margin:0 auto;padding:28px 24px 72px">
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:20px">
+<div><div style="font-size:13px;color:#425466;margin-bottom:2px">Sunrise Bakery · Brampton</div><h1 style="font-size:28px;letter-spacing:-.03em;margin:0">Bakery website</h1></div>
+<span style="background:#EFEEFF;color:#635BFF;font-size:12px;font-weight:600;padding:4px 12px;border-radius:999px">In progress</span></div>
+<div style="background:#fff;border:1px solid #E3E8EE;border-radius:12px;padding:22px;margin-bottom:20px;display:flex;flex-wrap:wrap;gap:18px">
+<sc-for list="{{ wsMs }}" as="m" hint-placeholder-count="3">
+<div style="flex:1 1 200px;display:flex;gap:12px;align-items:flex-start">
+<div style="width:30px;height:30px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:13px;font-weight:700;background:{{ m.bg }};color:{{ m.fg }};border:1px solid {{ m.bd }}">{{ m.icon }}</div>
+<div><div style="font-weight:600;font-size:14px">{{ m.t }}</div><div style="font-size:12px;color:#425466;margin-bottom:6px">{{ m.d }}</div><span style="background:{{ m.cbg }};color:{{ m.cfg }};font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px">{{ m.status }}</span></div></div>
+</sc-for></div>
+<div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start">
+<div style="flex:2 1 520px;min-width:0;display:flex;flex-direction:column;gap:16px">
+<div style="background:#fff;border:1px solid #E3E8EE;border-radius:12px;display:flex;flex-direction:column">
+<div style="padding:16px 22px;border-bottom:1px solid #E3E8EE;font-weight:600;font-size:15px">Chat with Sunrise Bakery</div>
+<div style="padding:20px 22px;display:flex;flex-direction:column;gap:12px;max-height:300px;overflow:auto">
+<sc-for list="{{ chatMsgs }}" as="c" hint-placeholder-count="3">
+<div style="display:flex;justify-content:{{ c.just }}"><div style="max-width:78%;padding:10px 14px;border-radius:12px;font-size:14px;line-height:1.55;background:{{ c.bg }};color:{{ c.fg }}">{{ c.text }}</div></div></sc-for></div>
+<div style="padding:14px 18px;border-top:1px solid #E3E8EE;display:flex;gap:10px">
+<input value="{{ chatInput }}" onChange="{{ setChat }}" placeholder="Write a message" style="flex:1;border:1px solid #E3E8EE;border-radius:999px;padding:10px 16px;font:14px Inter;outline:none;min-width:0">
+<button onClick="{{ sendChat }}" style="border:0;background:#635BFF;color:#fff;font:600 14px Inter;padding:10px 18px;border-radius:999px;cursor:pointer" style-hover="background:#5851E6">Send</button></div></div>
+<div style="background:#fff;border:1px solid #E3E8EE;border-radius:12px;padding:22px">
+<div style="font-weight:600;font-size:15px;margin-bottom:4px">Submit Milestone 2</div>
+<div style="font-size:13px;color:#425466;margin-bottom:16px">Menu and hours pages, live on a staging link.</div>
+<div style="border:1.5px dashed #C1C9D2;border-radius:10px;padding:20px;text-align:center;font-size:14px;color:#425466;margin-bottom:12px;background:#FAFBFD">Drop files here or <span style="color:#635BFF;font-weight:600">browse</span></div>
+<input value="{{ url }}" onChange="{{ setUrl }}" placeholder="https://staging.example.com" style="width:100%;border:1px solid #E3E8EE;border-radius:8px;padding:11px 14px;font:14px Inter;outline:none;margin-bottom:14px">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><span style="font-size:13px;color:#0B7A4B;font-weight:600">{{ submitMsg }}</span>
+<button onClick="{{ submitMs }}" style="border:0;background:#635BFF;color:#fff;font:600 14px Inter;padding:10px 20px;border-radius:999px;cursor:pointer" style-hover="background:#5851E6">Submit for review</button></div></div>
+</div>
+<div style="flex:1 1 320px;min-width:0">
+<div style="background:#fff;border:1px solid #E3E8EE;border-radius:12px;padding:22px;box-shadow:0 8px 24px rgba(50,50,93,.07)">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><div style="font-weight:600;font-size:15px">Automated check</div><span style="background:#E6F6EE;color:#0B7A4B;font-size:11px;font-weight:600;padding:2px 9px;border-radius:999px">Passed</span></div>
+<div style="display:flex;flex-direction:column;gap:12px;margin-bottom:18px">
+<sc-for list="{{ checks }}" as="k" hint-placeholder-count="3"><div style="display:flex;justify-content:space-between;align-items:center;font-size:14px"><span style="display:flex;gap:9px;align-items:center"><svg width="18" height="18" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#E6F6EE"/><path d="M4.6 8.2l2.2 2.2 4.4-4.5" stroke="#0B7A4B" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>{{ k.name }}</span><b>{{ k.val }}</b></div></sc-for></div>
+<div style="height:6px;background:#EFEEFF;border-radius:3px;margin-bottom:6px"><div style="height:100%;width:92%;background:#635BFF;border-radius:3px"></div></div>
+<div style="font-size:12px;color:#425466;margin-bottom:18px">Accessibility score 92 / 100</div>
+<div style="background:#F6F9FC;border:1px solid #E3E8EE;border-radius:10px;padding:14px">
+<div style="font-size:11px;font-weight:600;color:#635BFF;margin-bottom:6px">AI SUMMARY</div>
+<div style="font-size:13px;color:#425466;line-height:1.65">The staging site loads in 1.2s and adapts cleanly to mobile widths. Two images are missing alt text and the order button has low contrast against its background. Fixing both would bring accessibility above 95.</div></div>
+</div></div></div></div></div>
+</sc-if>
+
+<!-- ============ 6 SKILLS ============ -->
+<sc-if value="{{ pSkills }}" hint-placeholder-val="{{ false }}">
+<div style="background:#F6F9FC;min-height:100vh"><div style="max-width:1160px;margin:0 auto;padding:36px 24px 72px">
+<h1 style="font-size:30px;letter-spacing:-.03em;margin:0 0 6px">Verified skills</h1>
+<p style="color:#425466;margin:0 0 24px;font-size:15px">Three trust levels show employers how each skill was proven.</p>
+<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:28px">
+<sc-for list="{{ trustLevels }}" as="t" hint-placeholder-count="3"><div style="flex:1 1 240px;background:#fff;border:1px solid #E3E8EE;border-radius:12px;padding:16px 18px;display:flex;gap:12px;align-items:center"><svg width="24" height="24" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="{{ t.fill }}" stroke="{{ t.stroke }}" stroke-width="2"/><path d="M4.5 8.2l2.3 2.3 4.7-4.8" stroke="{{ t.tick }}" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div style="font-weight:600;font-size:14px">{{ t.name }}</div><div style="font-size:12px;color:#425466">{{ t.desc }}</div></div></div></sc-for></div>
+<div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start">
+<div style="flex:2 1 520px;min-width:0;display:flex;flex-direction:column;gap:16px">
+<div style="background:#fff;border:1px solid #E3E8EE;border-radius:12px;padding:24px">
+<div style="font-weight:600;font-size:16px;margin-bottom:14px">Your skills</div>
+<div style="display:flex;flex-direction:column">
+<sc-for list="{{ mySkills }}" as="s" hint-placeholder-count="4"><div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:{{ s.bt }}"><span style="font-size:15px;font-weight:500">{{ s.name }}</span><span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:{{ s.fg }};background:{{ s.bg }};padding:4px 10px;border-radius:999px"><svg width="13" height="13" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="{{ s.fill }}"/><path d="M4.5 8.2l2.3 2.3 4.7-4.8" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>{{ s.level }}</span></div></sc-for></div></div>
+<div style="background:#fff;border:1px solid #E3E8EE;border-radius:12px;padding:24px">
+<div style="font-weight:600;font-size:16px;margin-bottom:4px">Certification library</div>
+<div style="font-size:13px;color:#425466;margin-bottom:18px">Courses open on the provider's site. Come back to verify your credential.</div>
+<sc-for list="{{ certGroups }}" as="g" hint-placeholder-count="3">
+<div style="margin-bottom:18px"><div style="font-size:12px;font-weight:600;color:#425466;margin-bottom:8px">{{ g.field }}</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<sc-for list="{{ g.items }}" as="c" hint-placeholder-count="2"><a href="{{ c.url }}" target="_blank" style="display:flex;justify-content:space-between;align-items:center;gap:12px;border:1px solid #E3E8EE;border-radius:10px;padding:12px 16px;color:#0A0A0A" style-hover="border-color:#D3D8FF;background:#FAFAFF"><div><div style="font-size:14px;font-weight:500">{{ c.name }}</div><div style="font-size:12px;color:#425466">{{ c.by }} · {{ c.len }}</div></div><span style="font-size:12px;color:#635BFF;font-weight:600;white-space:nowrap">Open course ↗</span></a></sc-for></div></div></sc-for></div></div>
+<div style="flex:1 1 320px;min-width:0;position:sticky;top:80px">
+<div style="background:#fff;border:1px solid #E3E8EE;border-radius:12px;padding:24px;box-shadow:0 8px 24px rgba(50,50,93,.07)">
+<div style="font-weight:600;font-size:16px;margin-bottom:4px">Add a certification</div>
+<div style="font-size:13px;color:#425466;margin-bottom:16px">Paste a verification URL or credential ID.</div>
+<input value="{{ certInput }}" onChange="{{ setCert }}" style="width:100%;border:1px solid #E3E8EE;border-radius:8px;padding:11px 14px;font:14px Inter;outline:none;margin-bottom:12px">
+<button onClick="{{ verify }}" style="width:100%;border:0;background:#635BFF;color:#fff;font:600 14px Inter;padding:11px;border-radius:10px;cursor:pointer" style-hover="background:#5851E6">Verify</button>
+<sc-if value="{{ verifying }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:10px;align-items:center;margin-top:16px;font-size:13px;color:#425466"><div style="width:16px;height:16px;border:2px solid #EFEEFF;border-top-color:#635BFF;border-radius:50%;animation:spin .8s linear infinite"></div>Contacting issuer…</div></sc-if>
+<sc-if value="{{ verified }}" hint-placeholder-val="{{ false }}">
+<div style="margin-top:16px;border:1px solid #E3E8EE;border-radius:10px;padding:16px;background:#FAFAFF;animation:rise .3s">
+<span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#635BFF;background:#EFEEFF;padding:4px 10px;border-radius:999px;margin-bottom:10px"><svg width="13" height="13" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#635BFF"/><path d="M4.5 8.2l2.3 2.3 4.7-4.8" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Issuer verified</span>
+<div style="font-weight:600;font-size:15px">Google UX Design Certificate</div>
+<div style="font-size:13px;color:#425466;margin-bottom:12px">Issued to Aisha Khan by Google via Coursera · Mar 2026</div>
+<button onClick="{{ addCert }}" style="border:1px solid #635BFF;background:#fff;color:#635BFF;font:600 13px Inter;padding:8px 14px;border-radius:999px;cursor:pointer" style-hover="background:#EFEEFF">{{ addLabel }}</button></div></sc-if>
+</div></div></div></div></div>
+</sc-if>
+
+<!-- ============ 7 PUBLIC PROFILE ============ -->
+<sc-if value="{{ pProfile }}" hint-placeholder-val="{{ false }}">
+<div style="background:#F6F9FC;min-height:100vh"><div style="max-width:960px;margin:0 auto;padding:28px 24px 72px">
+<div style="font-size:12px;color:#425466;margin-bottom:14px;font-weight:500">Public view · this is what employers see</div>
+<div style="background:#fff;border:1px solid #E3E8EE;border-radius:14px;padding:30px;margin-bottom:16px;display:flex;flex-wrap:wrap;gap:28px;justify-content:space-between;align-items:center">
+<div style="display:flex;gap:20px;align-items:center;min-width:0">
+<div style="width:76px;height:76px;border-radius:50%;background:#EFEEFF;color:#635BFF;font-size:26px;font-weight:700;display:grid;place-items:center;flex:none">AK</div>
+<div><h1 style="font-size:28px;letter-spacing:-.03em;margin:0 0 2px">Aisha Khan</h1><div style="color:#425466;font-size:15px">2nd year Computer Science · York University</div><div style="color:#425466;font-size:14px;margin-top:2px">Front-end development and UX</div></div></div>
+<div style="display:flex;gap:14px;align-items:center">
+<div style="width:92px;height:92px;border:1px solid #E3E8EE;border-radius:10px;padding:7px;display:grid;grid-template-columns:repeat(13,1fr);gap:1px;flex:none"><sc-for list="{{ qr }}" as="q" hint-placeholder-count="20"><div style="background:{{ q.c }}"></div></sc-for></div>
+<div><div style="font-size:12px;color:#425466;margin-bottom:6px">Shareable link</div><div style="font-size:13px;font-weight:500;border:1px solid #E3E8EE;border-radius:8px;padding:7px 10px;margin-bottom:8px;background:#F6F9FC">launchpad.app/aisha-khan</div><button onClick="{{ copyLink }}" style="border:0;background:#635BFF;color:#fff;font:600 13px Inter;padding:7px 14px;border-radius:999px;cursor:pointer" style-hover="background:#5851E6">{{ copyLabel }}</button></div></div></div>
+<div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start">
+<div style="flex:2 1 420px;min-width:0;display:flex;flex-direction:column;gap:16px">
+<div style="background:#fff;border:1px solid #E3E8EE;border-radius:12px;padding:24px"><div style="font-weight:600;font-size:16px;margin-bottom:16px">Completed projects</div>
+<sc-for list="{{ done }}" as="p" hint-placeholder-count="2"><div style="border:1px solid #E3E8EE;border-radius:10px;padding:18px;margin-bottom:12px">
+<div style="display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:4px"><b style="font-size:15px">{{ p.title }}</b><span style="background:#E6F6EE;color:#0B7A4B;font-size:11px;font-weight:600;padding:2px 9px;border-radius:999px">Done</span></div>
+<div style="font-size:13px;color:#425466;margin-bottom:12px">{{ p.biz }} · {{ p.hours }} hours</div>
+<div style="font-size:14px;color:#425466;line-height:1.65;padding:12px 14px;background:#F6F9FC;border-radius:8px;margin-bottom:10px">"{{ p.review }}"<div style="font-size:12px;margin-top:6px;color:#0A0A0A;font-weight:500">{{ p.by }} · ★★★★★</div></div>
+<a href="#" style="font-size:13px;font-weight:600">{{ p.evidence }} ↗</a></div></sc-for></div></div>
+<div style="flex:1 1 280px;min-width:0;display:flex;flex-direction:column;gap:16px">
+<div style="background:#fff;border:1px solid #E3E8EE;border-radius:12px;padding:22px"><div style="font-weight:600;font-size:16px;margin-bottom:12px">Verified skills</div>
+<div style="display:flex;flex-direction:column">
+<sc-for list="{{ mySkills }}" as="s" hint-placeholder-count="4"><div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-top:{{ s.bt }}"><span style="font-size:14px;font-weight:500">{{ s.name }}</span><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="{{ s.fill }}"/><path d="M4.5 8.2l2.3 2.3 4.7-4.8" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div></sc-for></div>
+<div style="font-size:11px;color:#425466;margin-top:10px">Purple: issuer verified or skill checked. Gray: self-reported.</div></div>
+<div style="background:#fff;border:1px solid #E3E8EE;border-radius:12px;padding:22px"><div style="font-weight:600;font-size:16px;margin-bottom:12px">Certifications</div>
+<div style="display:flex;gap:10px;align-items:center"><svg width="20" height="20" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#635BFF"/><path d="M4.5 8.2l2.3 2.3 4.7-4.8" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div style="font-size:14px;font-weight:500">Google UX Design</div><div style="font-size:12px;color:#425466">Issuer verified · Mar 2026</div></div></div></div>
+</div></div></div></div>
+</sc-if>
+
+<!-- ============ 8 BUSINESS CREATE ============ -->
+<sc-if value="{{ pCreate }}" hint-placeholder-val="{{ false }}">
+<div style="background:#F6F9FC;min-height:100vh"><div style="max-width:800px;margin:0 auto;padding:48px 24px 80px">
+<sc-if value="{{ scopeIdle }}" hint-placeholder-val="{{ true }}">
+<div>
+<div style="font-size:13px;font-weight:600;color:#635BFF;margin-bottom:10px">New project</div>
+<h1 style="font-size:36px;letter-spacing:-.035em;line-height:1.1;margin:0 0 10px">Describe what you need.</h1>
+<p style="font-size:16px;color:#425466;margin:0 0 24px">Write it the way you'd tell a friend. We'll turn it into a scoped project.</p>
+<div style="background:#fff;border:1px solid #E3E8EE;border-radius:14px;padding:8px;box-shadow:0 8px 24px rgba(50,50,93,.08)">
+<textarea value="{{ brief }}" onChange="{{ setBrief }}" style="width:100%;height:170px;border:0;padding:16px;font:18px/1.6 Inter;resize:none;outline:none;color:#0A0A0A;border-radius:10px"></textarea>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px 8px 16px"><span style="font-size:13px;color:#425466">Sunrise Bakery · Brampton</span>
+<button onClick="{{ startScope }}" style="border:0;background:#635BFF;color:#fff;font:600 14px Inter;padding:11px 22px;border-radius:999px;cursor:pointer" style-hover="background:#5851E6">Scope with AI</button></div></div></div>
+</sc-if>
+<sc-if value="{{ scopeLoading }}" hint-placeholder-val="{{ false }}">
+<div style="text-align:center;padding:90px 0">
+<div style="width:44px;height:44px;border:3px solid #EFEEFF;border-top-color:#635BFF;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 26px"></div>
+<h2 style="font-size:22px;letter-spacing:-.025em;margin:0 0 18px">Scoping your project</h2>
+<div style="display:inline-flex;flex-direction:column;gap:10px;text-align:left">
+<sc-for list="{{ scopeSteps }}" as="s" hint-placeholder-count="4"><div style="display:flex;gap:10px;align-items:center;font-size:14px;color:{{ s.fg }};opacity:{{ s.op }}"><span style="width:8px;height:8px;border-radius:50%;background:{{ s.dot }};{{ s.anim }}"></span>{{ s.t }}</div></sc-for></div></div>
+</sc-if>
+<sc-if value="{{ scopeDone }}" hint-placeholder-val="{{ false }}">
+<div style="animation:rise .35s">
+<span style="background:#EFEEFF;color:#635BFF;font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px">AI-scoped · everything is editable</span>
+<div style="background:#fff;border:1px solid #E3E8EE;border-radius:14px;padding:28px;margin:14px 0 16px">
+<div style="font-size:12px;color:#425466;margin-bottom:6px;font-weight:500">Project title</div>
+<input value="{{ sTitle }}" onChange="{{ setTitle }}" style="width:100%;border:1px solid #E3E8EE;border-radius:8px;padding:11px 14px;font:600 20px Inter;letter-spacing:-.02em;outline:none"></div>
+<div style="background:#fff;border:1px solid #E3E8EE;border-radius:14px;padding:28px;margin-bottom:16px">
+<div style="font-weight:600;font-size:15px;margin-bottom:12px">Deliverables</div>
+<div style="display:flex;flex-direction:column;gap:8px"><sc-for list="{{ dels }}" as="d" hint-placeholder-count="4"><input value="{{ d.v }}" onChange="{{ d.set }}" style="width:100%;border:1px solid #E3E8EE;border-radius:8px;padding:10px 14px;font:14px Inter;outline:none"></sc-for></div></div>
+<div style="background:#fff;border:1px solid #E3E8EE;border-radius:14px;padding:28px;margin-bottom:16px">
+<div style="font-weight:600;font-size:15px;margin-bottom:12px">Milestones</div>
+<div style="display:flex;flex-direction:column;gap:8px"><sc-for list="{{ mss }}" as="m" hint-placeholder-count="3"><div style="display:flex;gap:10px;align-items:center"><div style="width:26px;height:26px;border-radius:50%;background:#EFEEFF;color:#635BFF;font-size:12px;font-weight:700;display:grid;place-items:center;flex:none">{{ m.n }}</div><input value="{{ m.v }}" onChange="{{ m.set }}" style="flex:1;min-width:0;border:1px solid #E3E8EE;border-radius:8px;padding:10px 14px;font:14px Inter;outline:none"><span style="font-size:13px;color:#425466;white-space:nowrap">{{ m.amt }}</span></div></sc-for></div></div>
+<div style="background:#fff;border:1px solid #E3E8EE;border-radius:14px;padding:28px;margin-bottom:16px">
+<div style="font-weight:600;font-size:15px;margin-bottom:12px">Skills</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px"><sc-for list="{{ sk }}" as="s" hint-placeholder-count="4"><span onClick="{{ s.rm }}" style="cursor:pointer;background:#EFEEFF;color:#635BFF;font-size:13px;font-weight:500;padding:5px 12px;border-radius:8px" style-hover="background:#E3E1FF">{{ s.t }} ×</span></sc-for></div>
+<input value="{{ newSkill }}" onChange="{{ setNewSkill }}" onKeyDown="{{ addSkill }}" placeholder="Add a skill and press Enter" style="width:100%;border:1px solid #E3E8EE;border-radius:8px;padding:9px 14px;font:14px Inter;outline:none"></div>
+<div style="background:#fff;border:1px solid #E3E8EE;border-radius:14px;padding:28px;margin-bottom:22px;display:flex;flex-wrap:wrap;gap:28px">
+<div style="flex:1 1 180px"><div style="font-size:12px;color:#425466;margin-bottom:6px;font-weight:500">Estimated hours</div><input type="number" value="{{ hrs }}" onChange="{{ setHrs }}" style="width:100%;border:1px solid #E3E8EE;border-radius:8px;padding:10px 14px;font:600 16px Inter;outline:none"></div>
+<div style="flex:1 1 220px"><div style="font-size:12px;color:#425466;margin-bottom:6px;font-weight:500">Compensation</div>
+<div style="display:flex;background:#F6F9FC;border:1px solid #E3E8EE;border-radius:999px;padding:3px;width:fit-content;margin-bottom:10px;font-size:13px;font-weight:600"><span onClick="{{ payPaid }}" style="cursor:pointer;padding:6px 16px;border-radius:999px;background:{{ paidBg }};color:{{ paidFg }}">Stipend</span><span onClick="{{ payVol }}" style="cursor:pointer;padding:6px 16px;border-radius:999px;background:{{ volBg }};color:{{ volFg }}">Volunteer</span></div>
+<sc-if value="{{ isPaid }}" hint-placeholder-val="{{ true }}"><div style="display:flex;align-items:center;gap:8px"><input type="number" value="{{ pay }}" onChange="{{ setPay }}" style="width:110px;border:1px solid #E3E8EE;border-radius:8px;padding:10px 14px;font:600 16px Inter;outline:none"><span style="font-size:13px;color:#425466">Suggested range $350 to $450</span></div></sc-if>
+<sc-if value="{{ isVol }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:#425466">Unpaid. Students earn a verified reference and review.</div></sc-if></div></div>
+<div style="display:flex;justify-content:space-between;align-items:center"><span onClick="{{ resetScope }}" style="font-size:14px;color:#425466;cursor:pointer;font-weight:500">Start over</span>
+<button onClick="{{ publish }}" style="border:0;background:#635BFF;color:#fff;font:600 15px Inter;padding:13px 26px;border-radius:999px;cursor:pointer;box-shadow:0 4px 14px rgba(99,91,255,.3)" style-hover="background:#5851E6">Publish project</button></div>
+</div></sc-if>
+</div></div>
+</sc-if>
+
+<!-- ============ 9 BUSINESS DASHBOARD ============ -->
+<sc-if value="{{ pBdash }}" hint-placeholder-val="{{ false }}">
+<div style="background:#F6F9FC;min-height:100vh"><div style="max-width:1160px;margin:0 auto;padding:36px 24px 72px">
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:26px"><div><h1 style="font-size:30px;letter-spacing:-.03em;margin:0 0 4px">Sunrise Bakery</h1><div style="color:#425466;font-size:15px">Brampton, ON</div></div>
+<button onClick="{{ goCreate }}" style="border:0;background:#635BFF;color:#fff;font:600 14px Inter;padding:11px 20px;border-radius:999px;cursor:pointer" style-hover="background:#5851E6">New project</button></div>
+<sc-if value="{{ published }}" hint-placeholder-val="{{ false }}"><div style="background:#E6F6EE;color:#0B7A4B;border-radius:10px;padding:12px 16px;font-size:14px;font-weight:500;margin-bottom:18px">Project published. Matching students have been notified.</div></sc-if>
+<div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start">
+<div style="flex:2 1 520px;min-width:0;display:flex;flex-direction:column;gap:16px">
+<div style="background:#fff;border:1px solid #E3E8EE;border-radius:12px;padding:22px"><div style="font-weight:600;font-size:16px;margin-bottom:14px">Active projects</div>
+<div style="border:1px solid #E3E8EE;border-radius:10px;padding:16px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><b style="font-size:15px">Bakery website</b><span style="background:#EFEEFF;color:#635BFF;font-size:11px;font-weight:600;padding:2px 9px;border-radius:999px">In progress</span></div><div style="font-size:13px;color:#425466;margin-bottom:12px">Aisha Khan · Milestone 2 of 3 · $400</div><div style="height:5px;background:#EFEEFF;border-radius:3px"><div style="height:100%;width:45%;background:#635BFF;border-radius:3px"></div></div></div>
+<sc-if value="{{ published }}" hint-placeholder-val="{{ false }}"><div style="border:1px solid #E3E8EE;border-radius:10px;padding:16px;margin-top:10px"><div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:15px">{{ pubTitle }}</b><span style="background:#F0F2F5;color:#425466;font-size:11px;font-weight:600;padding:2px 9px;border-radius:999px">Open</span></div><div style="font-size:13px;color:#425466;margin-top:4px">Accepting applications</div></div></sc-if></div>
+<div style="background:#fff;border:1px solid #E3E8EE;border-radius:12px;padding:22px"><div style="font-weight:600;font-size:16px;margin-bottom:14px">Milestone approval</div>
+<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><div><div style="font-weight:600;font-size:14px">Milestone 2 · Menu and hours pages</div><div style="font-size:13px;color:#425466">Submitted by Aisha · automated check passed</div></div>
+<div style="display:flex;gap:8px"><sc-if value="{{ notApproved }}" hint-placeholder-val="{{ true }}"><button onClick="{{ goReview }}" style="border:1px solid #E3E8EE;background:#fff;font:600 13px Inter;padding:8px 14px;border-radius:999px;cursor:pointer">Review</button><button onClick="{{ approve }}" style="border:0;background:#635BFF;color:#fff;font:600 13px Inter;padding:8px 16px;border-radius:999px;cursor:pointer" style-hover="background:#5851E6">Approve · release $150</button></sc-if><sc-if value="{{ approved }}" hint-placeholder-val="{{ false }}"><span style="background:#E6F6EE;color:#0B7A4B;font-size:12px;font-weight:600;padding:6px 14px;border-radius:999px">Approved · $150 released</span></sc-if></div></div></div>
+<div style="background:#fff;border:1px solid #E3E8EE;border-radius:12px;padding:22px"><div style="font-weight:600;font-size:16px;margin-bottom:4px">Rate your student</div><div style="font-size:13px;color:#425466;margin-bottom:14px">Event flyer · Aisha Khan · completed</div>
+<sc-if value="{{ notRated }}" hint-placeholder-val="{{ true }}"><div style="display:flex;gap:6px;align-items:center"><sc-for list="{{ stars }}" as="s" hint-placeholder-count="5"><span onClick="{{ s.click }}" style="cursor:pointer;font-size:28px;color:{{ s.c }};line-height:1">★</span></sc-for><button onClick="{{ submitRating }}" style="margin-left:14px;border:0;background:#635BFF;color:#fff;font:600 13px Inter;padding:8px 16px;border-radius:999px;cursor:pointer" style-hover="background:#5851E6">Submit review</button></div></sc-if>
+<sc-if value="{{ rated }}" hint-placeholder-val="{{ false }}"><div style="font-size:14px;color:#0B7A4B;font-weight:600">Review posted to Aisha's public profile.</div></sc-if></div>
+</div>
+<div style="flex:1 1 320px;min-width:0;display:flex;flex-direction:column;gap:16px">
+<div style="background:#fff;border:1px solid #E3E8EE;border-radius:12px;padding:22px"><div style="font-weight:600;font-size:16px;margin-bottom:14px">Applicants</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<sc-for list="{{ applicants }}" as="a" hint-placeholder-count="3"><div onClick="{{ a.pick }}" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid {{ a.bd }};background:{{ a.bg }};border-radius:10px;padding:12px 14px"><div style="display:flex;gap:10px;align-items:center"><div style="width:32px;height:32px;border-radius:50%;background:#EFEEFF;color:#635BFF;font-size:12px;font-weight:600;display:grid;place-items:center">{{ a.init }}</div><div><div style="font-size:14px;font-weight:600">{{ a.name }}</div><div style="font-size:12px;color:#425466">{{ a.school }}</div></div></div><span style="background:#EFEEFF;color:#635BFF;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px">{{ a.match }}%</span></div></sc-for></div></div>
+<div style="background:#fff;border:1px solid #E3E8EE;border-radius:12px;padding:22px;animation:rise .25s">
+<div style="font-size:12px;font-weight:600;color:#425466;margin-bottom:10px">PROFILE PREVIEW</div>
+<div style="font-weight:600;font-size:16px">{{ ap.name }}</div><div style="font-size:13px;color:#425466;margin-bottom:12px">{{ ap.school }}</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px"><sc-for list="{{ ap.skills }}" as="s" hint-placeholder-count="3"><span style="background:#F6F9FC;border:1px solid #E3E8EE;font-size:12px;padding:3px 9px;border-radius:6px;color:#425466">{{ s.t }}</span></sc-for></div>
+<div style="font-size:13px;color:#425466;margin-bottom:14px">{{ ap.note }}</div>
+<div style="display:flex;gap:8px"><span onClick="{{ goProfile }}" style="font-size:13px;font-weight:600;color:#635BFF;cursor:pointer;padding:8px 0">View full profile →</span></div></div>
+</div></div></div></div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    page: 'landing', view: 'student', obStep: 0, field: 'Computer Science',
+    skills: ['HTML', 'CSS', 'JavaScript', 'Figma'], hours: '6 to 10', pref: 'Open to both',
+    sel: 'bakery', applyOpen: false, sent: false, proposal: null,
+    chat: [
+      { me: false, text: "Hi Aisha, welcome aboard. Menu photos are in the shared folder." },
+      { me: true, text: "Thanks! I'll have the menu and hours pages on staging by Thursday." },
+      { me: false, text: "Perfect. We'd love the order form to feel simple on a phone." }],
+    chatInput: '', url: 'https://sunrise-bakery-demo.netlify.app', submitted: false,
+    certInput: 'GUX-48213-AK', verifyState: 'idle', certAdded: false,
+    scopeState: 'idle', scopeStep: 0,
+    brief: 'I need a simple website with our menu, hours, and an online order form.',
+    sTitle: 'Bakery website',
+    dels: ['Responsive homepage with brand colors and story', 'Menu page with categories and prices', 'Hours and location page with map', 'Online order form that emails the bakery'],
+    mss: [{ v: 'Design mockups in Figma', a: '$100' }, { v: 'Menu and hours pages built', a: '$150' }, { v: 'Order form, testing, launch', a: '$150' }],
+    sk: ['HTML', 'CSS', 'JavaScript', 'Figma'], newSkill: '', hrs: 20, payMode: 'paid', pay: 400,
+    published: false, approved: false, rating: 0, rated: false, openApp: 0, copied: false
+  };
+
+  P = [
+    { id: 'bakery', init: 'S', biz: 'Sunrise Bakery', place: 'Brampton', title: 'Bakery website', match: 96, pay: '$400 stipend', hours: 20, deadline: 'Dec 12', skills: ['HTML', 'CSS', 'Figma', 'JavaScript'], desc: 'Sunrise Bakery needs a simple website with their menu, hours, and an online order form so regulars can order ahead from their phones.', dels: ['Responsive homepage with brand colors and story', 'Menu page with categories and prices', 'Hours and location page with map', 'Online order form that emails the bakery'], mss: [['Design mockups in Figma', 'Week 1', '$100'], ['Menu and hours pages built', 'Week 2', '$150'], ['Order form, testing, launch', 'Week 3', '$150']], about: 'Family-run bakery serving Brampton since 2011. Six staff, one location, and a loyal morning crowd.' },
+    { id: 'npo', init: 'P', biz: 'Peel Youth Hub', place: 'Mississauga', title: 'Social media plan', match: 88, pay: 'Volunteer', hours: 12, deadline: 'Dec 20', skills: ['Writing', 'Canva', 'Research'], desc: 'A nonprofit supporting local teens needs a three-month social media plan with a content calendar and sample posts.', dels: ['Audience and channel recommendation', '12-week content calendar', '10 sample posts with captions'], mss: [['Audience research', 'Week 1', 'Unpaid'], ['Content calendar', 'Week 2', 'Unpaid'], ['Sample posts', 'Week 3', 'Unpaid']], about: 'Registered charity running after-school programs for youth ages 13 to 19.' },
+    { id: 'land', init: 'G', biz: 'GreenEdge Landscaping', place: 'Oakville', title: 'Logo and brand mark', match: 82, pay: '$250 stipend', hours: 10, deadline: 'Dec 5', skills: ['Figma', 'Illustration', 'Branding'], desc: 'GreenEdge needs a simple logo that works on trucks, uniforms, and invoices.', dels: ['3 logo concepts', 'Final logo in SVG and PNG', 'One-page usage guide'], mss: [['Concepts', 'Week 1', '$100'], ['Revisions', 'Week 2', '$100'], ['Final files', 'Week 2', '$50']], about: 'Residential landscaping crew of eight, serving Halton Region.' },
+    { id: 'dental', init: 'B', biz: 'Bright Smile Dental', place: 'Toronto', title: 'Patient data cleanup', match: 64, pay: '$300 stipend', hours: 15, deadline: 'Dec 18', skills: ['Excel', 'Data cleaning', 'SQL'], desc: 'Bright Smile needs duplicate records merged and inconsistent fields standardized in an exported patient list.', dels: ['Duplicate report', 'Cleaned spreadsheet', 'Short change log'], mss: [['Audit and duplicate report', 'Week 1', '$100'], ['Cleaning pass', 'Week 2', '$150'], ['Review and change log', 'Week 3', '$50']], about: 'Two-dentist clinic near Yonge and Eglinton with about 3,000 active patients.' }
+  ];
+
+  go(p) { return () => { this.setState({ page: p }); window.scrollTo(0, 0); }; }
+  tags(arr, mine) {
+    const m = ['HTML', 'CSS', 'JavaScript', 'Figma'];
+    return arr.map(t => { const h = mine && m.includes(t); return { t, bg: h ? '#EFEEFF' : '#F6F9FC', bd: h ? '#D3D8FF' : '#E3E8EE', fg: h ? '#635BFF' : '#425466' }; });
+  }
+  scope() {
+    this.setState({ scopeState: 'loading', scopeStep: 0 });
+    [700, 1400, 2100].forEach((t, i) => setTimeout(() => this.setState({ scopeStep: i + 1 }), t));
+    setTimeout(() => this.setState({ scopeState: 'done' }), 2800);
+  }
+
+  renderVals() {
+    const s = this.state, g = p => this.go(p);
+    const upd = o => this.setState(o);
+    const biz = s.view === 'business';
+    const pg = s.page;
+    const cur0 = this.P.find(p => p.id === s.sel);
+    const cur = { ...cur0, mss: cur0.mss.map((m, i) => ({ n: i + 1, t: m[0], d: m[1], amt: m[2], bt: i ? '1px solid #E3E8EE' : '0' })), dels: cur0.dels.map(t => ({ t })), skills: this.tags(cur0.skills, true), hours: cur0.hours + ' hrs' };
+    const obOpts = [
+      ['Computer Science', 'Design', 'Business', 'Engineering', 'Marketing', 'Communications', 'Data Science', 'Other'],
+      ['HTML', 'CSS', 'JavaScript', 'Figma', 'Python', 'SQL', 'Writing', 'Canva', 'Excel', 'Branding', 'Research'],
+      ['1 to 5', '6 to 10', '11 to 15', '16+'],
+      ['Paid only', 'Volunteer only', 'Open to both']];
+    const obT = [['What do you study?', 'We use this to match you with relevant projects.'], ['Which skills do you have?', 'Pick all that apply. You can verify them later.'], ['How many hours per week?', 'Projects are scoped to fit your schedule.'], ['Paid or volunteer?', 'You can change this any time.']];
+    const sel = (on) => ({ bd: on ? '#635BFF' : '#E3E8EE', bg: on ? '#EFEEFF' : '#fff', fg: on ? '#635BFF' : '#0A0A0A' });
+    const obOptions = obOpts[s.obStep].map(label => {
+      const on = s.obStep === 0 ? s.field === label : s.obStep === 1 ? s.skills.includes(label) : s.obStep === 2 ? s.hours === label : s.pref === label;
+      return { label, ...sel(on), click: () => {
+        if (s.obStep === 0) upd({ field: label });
+        else if (s.obStep === 1) upd({ skills: s.skills.includes(label) ? s.skills.filter(x => x !== label) : [...s.skills, label] });
+        else if (s.obStep === 2) upd({ hours: label }); else upd({ pref: label }); } };
+    });
+    const navDefs = biz ? [['Dashboard', 'bdash'], ['New project', 'create']] : [['Dashboard', 'dash'], ['Workspace', 'work'], ['Skills', 'skills'], ['Profile', 'profile']];
+    const navItems = navDefs.map(([label, p]) => {
+      const on = pg === p || (p === 'dash' && pg === 'project');
+      return { label, go: g(p), color: on ? '#635BFF' : '#425466', bg: on ? '#EFEEFF' : 'transparent' };
+    });
+    const on = (c) => c ? { bg: '#fff', fg: '#0A0A0A', sh: '0 1px 3px rgba(0,0,0,.12)' } : { bg: 'transparent', fg: '#425466', sh: 'none' };
+    const sv = on(!biz), bv = on(biz);
+    const trustLevels = [
+      { name: 'Issuer verified', desc: 'Confirmed directly with the issuing organization.', fill: '#635BFF', stroke: '#635BFF', tick: '#fff' },
+      { name: 'Skill checked', desc: 'Demonstrated in a reviewed project or assessment.', fill: '#fff', stroke: '#635BFF', tick: '#635BFF' },
+      { name: 'Self-reported', desc: 'Added by the student, not yet confirmed.', fill: '#fff', stroke: '#A8B3C2', tick: '#A8B3C2' }];
+    const lv = { i: ['Issuer verified', '#635BFF', '#EFEEFF', '#635BFF'], c: ['Skill checked', '#635BFF', '#EFEEFF', '#8F89FF'], s: ['Self-reported', '#425466', '#F0F2F5', '#A8B3C2'] };
+    const mk = (name, k, i) => ({ name, level: lv[k][0], fg: lv[k][1], bg: lv[k][2], fill: lv[k][3], bt: i ? '1px solid #E3E8EE' : '0' });
+    const mySkills = [mk('UX Design', 'i', 0), mk('HTML', 'c', 1), mk('CSS', 'c', 2), mk('Figma', 'c', 3), mk('JavaScript', 's', 4)];
+    const msStatus = { done: { bg: '#E6F6EE', fg: '#0B7A4B', bd: '#E6F6EE', cbg: '#E6F6EE', cfg: '#0B7A4B', status: 'Done', icon: '✓' }, prog: { bg: '#635BFF', fg: '#fff', bd: '#635BFF', cbg: '#EFEEFF', cfg: '#635BFF', status: s.submitted ? 'In review' : 'In progress' }, open: { bg: '#fff', fg: '#425466', bd: '#E3E8EE', cbg: '#F0F2F5', cfg: '#425466', status: 'Open' } };
+    const wsMs = [{ t: 'Design mockups', d: 'Figma · $100', ...msStatus.done }, { t: 'Menu and hours pages', d: 'Staging link · $150', ...msStatus.prog, icon: '2' }, { t: 'Order form and launch', d: 'Testing · $150', ...msStatus.open, icon: '3' }];
+    const appl = [
+      { name: 'Aisha Khan', school: 'York University', match: 96, skills: ['HTML', 'CSS', 'Figma', 'JavaScript'], note: 'Issuer verified in UX Design. Completed 1 project with a 5-star review.' },
+      { name: 'Daniel Okafor', school: 'Humber College', match: 88, skills: ['HTML', 'CSS', 'WordPress'], note: 'Skill checked in HTML and CSS. No completed projects yet.' },
+      { name: 'Priya Shah', school: 'Toronto Metropolitan', match: 81, skills: ['Figma', 'Branding', 'CSS'], note: 'Self-reported skills. Portfolio link provided.' }];
+    const ini = n => n.split(' ').map(w => w[0]).join('');
+    const applicants = appl.map((a, i) => ({ ...a, init: ini(a.name), pick: () => upd({ openApp: i }), bd: s.openApp === i ? '#635BFF' : '#E3E8EE', bg: s.openApp === i ? '#FAFAFF' : '#fff' }));
+    const ap = { ...appl[s.openApp], skills: appl[s.openApp].skills.map(t => ({ t })) };
+    const scopeLabels = ['Reading your request', 'Defining deliverables', 'Estimating hours and pay', 'Matching required skills'];
+    const scopeSteps = scopeLabels.map((t, i) => { const d = s.scopeStep > i, a = s.scopeStep === i; return { t, fg: d || a ? '#0A0A0A' : '#425466', op: d || a ? 1 : .5, dot: d ? '#0B7A4B' : '#635BFF', anim: a ? 'animation:pulse 1s infinite' : '' }; });
+    const qr = []; for (let i = 0; i < 169; i++) { const r = Math.floor(i / 13), c = i % 13; const fin = (r < 4 && c < 4) || (r < 4 && c > 8) || (r > 8 && c < 4); const v = fin ? !(r % 3 === 1 && c % 3 === 1 && false) && ((r === 0 || r === 3 || r > 8 || r === 3) || c === 0 || c === 3 || c > 8 || c === 12) : ((i * 7 + r * 3 + c * 5) % 3 === 0); qr.push({ c: v ? '#0A0A0A' : '#fff' }); }
+    const pubTitle = s.sTitle;
+    const proposal = s.proposal !== null ? s.proposal : `Hi ${cur0.biz} team,\n\nI'm Aisha, a 2nd year Computer Science student at York University. I've built responsive sites with HTML, CSS and JavaScript, and I hold a verified Google UX Design certificate.\n\nFor "${cur0.title}" I would start with a short plan and mockups for your approval, then build and test in stages so you can review each milestone. I can commit about ${Math.min(10, cur0.hours)} hours per week and finish before ${cur0.deadline}.\n\nThank you for considering me.\nAisha`;
+    return {
+      pLanding: pg === 'landing', pOnboard: pg === 'onboard', pDash: pg === 'dash', pProject: pg === 'project', pWork: pg === 'work', pSkills: pg === 'skills', pProfile: pg === 'profile', pCreate: pg === 'create', pBdash: pg === 'bdash',
+      showLandingNav: pg === 'landing', showAppNav: pg !== 'landing' && pg !== 'onboard',
+      goLanding: g('landing'), goOnboard: g('onboard'), goDash: g(biz ? 'bdash' : 'dash'), goWork: g('work'), goSkills: g('skills'), goProfile: g('profile'),
+      goCreate: () => { upd({ view: 'business', page: 'create' }); window.scrollTo(0, 0); },
+      scrollHow: () => { const e = document.getElementById('how'); if (e) window.scrollTo({ top: e.getBoundingClientRect().top + window.scrollY - 70, behavior: 'smooth' }); },
+      navItems, setStudent: () => { upd({ view: 'student', page: 'dash' }); window.scrollTo(0, 0); }, setBusiness: () => { upd({ view: 'business', page: 'bdash' }); window.scrollTo(0, 0); },
+      stuBg: sv.bg, stuFg: sv.fg, stuSh: sv.sh, busBg: bv.bg, busFg: bv.fg, busSh: bv.sh, initials: biz ? 'SB' : 'AK',
+      steps: [{ n: 1, t: 'Build your profile', d: 'Add your field, skills, and certifications. Each one is checked and labeled with a trust level.' }, { n: 2, t: 'Complete a scoped project', d: 'Pick a matched project with clear deliverables, milestones, and a fair stipend. Chat with the business as you go.' }, { n: 3, t: 'Earn verified proof', d: 'Automated checks and client reviews are attached to your public profile as evidence.' }],
+      trustLevels,
+      obNum: s.obStep + 1, obBars: [0, 1, 2, 3].map(i => ({ c: i <= s.obStep ? '#635BFF' : '#E3E8EE' })),
+      obTitle: obT[s.obStep][0], obSub: obT[s.obStep][1], obOptions, backVis: s.obStep ? 'visible' : 'hidden',
+      obBtn: s.obStep === 3 ? 'Finish' : 'Continue',
+      obBack: () => upd({ obStep: s.obStep - 1 }),
+      obNext: () => { if (s.obStep === 3) { upd({ page: 'dash', view: 'student', obStep: 0 }); window.scrollTo(0, 0); } else upd({ obStep: s.obStep + 1 }); },
+      projects: this.P.map(p => ({ ...p, skills: this.tags(p.skills, true), open: () => { upd({ sel: p.id, sent: false, applyOpen: false, proposal: null, page: 'project' }); window.scrollTo(0, 0); } })), projCount: this.P.length,
+      strength: 80,
+      recCerts: [{ name: 'Meta Front-End Developer', by: 'Meta · Coursera' }, { name: 'freeCodeCamp Responsive Web Design', by: 'freeCodeCamp' }],
+      cur, applyOpen: s.applyOpen, notSent: !s.sent, sent: s.sent, stop: e => e.stopPropagation(),
+      openApply: () => upd({ applyOpen: true, sent: false }), closeApply: () => upd({ applyOpen: false }),
+      proposal, setProposal: e => upd({ proposal: e.target.value }), sendProposal: () => upd({ sent: true }),
+      wsMs, chatMsgs: s.chat.map(c => ({ text: c.text, just: c.me ? 'flex-end' : 'flex-start', bg: c.me ? '#635BFF' : '#F6F9FC', fg: c.me ? '#fff' : '#0A0A0A' })),
+      chatInput: s.chatInput, setChat: e => upd({ chatInput: e.target.value }),
+      sendChat: () => s.chatInput.trim() && upd({ chat: [...s.chat, { me: true, text: s.chatInput }], chatInput: '' }),
+      url: s.url, setUrl: e => upd({ url: e.target.value }),
+      submitMs: () => upd({ submitted: true, chat: [...s.chat, { me: true, text: 'Milestone 2 submitted for review: ' + s.url }] }),
+      submitMsg: s.submitted ? 'Submitted. Sunrise Bakery has been notified.' : '',
+      checks: [{ name: 'Site loads', val: '1.2s' }, { name: 'Mobile friendly', val: 'Pass' }, { name: 'Accessibility', val: '92' }],
+      mySkills, certGroups: [
+        { field: 'DESIGN', items: [{ name: 'Google UX Design', by: 'Google · Coursera', len: '6 months', url: 'https://www.coursera.org/professional-certificates/google-ux-design' }, { name: 'Figma for Beginners', by: 'Figma', len: '2 hours', url: 'https://help.figma.com/hc/en-us/articles/360040328273' }] },
+        { field: 'WEB DEVELOPMENT', items: [{ name: 'Responsive Web Design', by: 'freeCodeCamp', len: '300 hours', url: 'https://www.freecodecamp.org/learn/2022/responsive-web-design/' }, { name: 'Meta Front-End Developer', by: 'Meta · Coursera', len: '7 months', url: 'https://www.coursera.org/professional-certificates/meta-front-end-developer' }] },
+        { field: 'DATA', items: [{ name: 'Google Data Analytics', by: 'Google · Coursera', len: '6 months', url: 'https://www.coursera.org/professional-certificates/google-data-analytics' }] }],
+      certInput: s.certInput, setCert: e => upd({ certInput: e.target.value, verifyState: 'idle' }),
+      verify: () => { upd({ verifyState: 'loading' }); setTimeout(() => this.setState({ verifyState: 'done' }), 1500); },
+      verifying: s.verifyState === 'loading', verified: s.verifyState === 'done',
+      addCert: () => upd({ certAdded: true }), addLabel: s.certAdded ? 'Added to profile ✓' : 'Add to profile',
+      qr, copyLabel: s.copied ? 'Copied' : 'Copy link', copyLink: () => { upd({ copied: true }); setTimeout(() => this.setState({ copied: false }), 1800); },
+      done: [{ title: 'Event flyer', biz: 'Peel Youth Hub', hours: 8, review: 'Aisha delivered a clear, on-brand flyer ahead of schedule and handled our feedback quickly.', by: 'Maria T., Program Lead', evidence: 'View final flyer' }, { title: 'Menu redesign', biz: 'Corner Cafe', hours: 10, review: 'Professional and easy to work with. The new menu is much easier to read.', by: 'James L., Owner', evidence: 'View live menu' }],
+      scopeIdle: s.scopeState === 'idle', scopeLoading: s.scopeState === 'loading', scopeDone: s.scopeState === 'done',
+      brief: s.brief, setBrief: e => upd({ brief: e.target.value }), startScope: () => this.scope(), scopeSteps,
+      sTitle: s.sTitle, setTitle: e => upd({ sTitle: e.target.value }),
+      dels: s.dels.map((v, i) => ({ v, set: e => upd({ dels: s.dels.map((x, j) => j === i ? e.target.value : x) }) })),
+      mss: s.mss.map((m, i) => ({ n: i + 1, v: m.v, amt: s.payMode === 'paid' ? m.a : 'Unpaid', set: e => upd({ mss: s.mss.map((x, j) => j === i ? { ...x, v: e.target.value } : x) }) })),
+      sk: s.sk.map(t => ({ t, rm: () => upd({ sk: s.sk.filter(x => x !== t) }) })),
+      newSkill: s.newSkill, setNewSkill: e => upd({ newSkill: e.target.value }),
+      addSkill: e => { if (e.key === 'Enter' && s.newSkill.trim()) upd({ sk: [...s.sk, s.newSkill.trim()], newSkill: '' }); },
+      hrs: s.hrs, setHrs: e => upd({ hrs: e.target.value }), pay: s.pay, setPay: e => upd({ pay: e.target.value }),
+      isPaid: s.payMode === 'paid', isVol: s.payMode === 'vol',
+      payPaid: () => upd({ payMode: 'paid' }), payVol: () => upd({ payMode: 'vol' }),
+      paidBg: s.payMode === 'paid' ? '#fff' : 'transparent', paidFg: s.payMode === 'paid' ? '#0A0A0A' : '#425466',
+      volBg: s.payMode === 'vol' ? '#fff' : 'transparent', volFg: s.payMode === 'vol' ? '#0A0A0A' : '#425466',
+      resetScope: () => upd({ scopeState: 'idle' }),
+      publish: () => { upd({ published: true, page: 'bdash', scopeState: 'idle' }); window.scrollTo(0, 0); },
+      published: s.published, pubTitle,
+      notApproved: !s.approved, approved: s.approved, approve: () => upd({ approved: true }), goReview: g('work'),
+      notRated: !s.rated, rated: s.rated, submitRating: () => s.rating && upd({ rated: true }),
+      stars: [1, 2, 3, 4, 5].map(n => ({ c: n <= s.rating ? '#635BFF' : '#D5DBE3', click: () => upd({ rating: n }) })),
+      applicants, ap
+    };
+  }
+}
+</script>
+</body>
+</html>
