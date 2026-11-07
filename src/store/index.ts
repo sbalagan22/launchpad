@@ -23,6 +23,7 @@ type AppState = {
   markHydrated: () => void;
 };
 
+// MOCK: localStorage is the only "database". Everything persists per browser, never on a server.
 export const useApp = create<AppState>()(
   persist(
     (set) => ({

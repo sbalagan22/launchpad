@@ -96,6 +96,7 @@ export async function approveSubmission(submissionId: string) {
       const next = milestones.findIndex((m) => m.status !== "approved");
       milestones = milestones.map((m, i) => (i === next ? { ...m, status: "in_progress" as const } : m));
     }
+    // MOCK: payout release is visual only. No payment provider is called and no money moves.
     const released = p.milestones.filter((_, i) => covered(i)).reduce((a, m) => a + m.amount, 0);
     const next = { ...sub, status: "approved" as const };
     return {
