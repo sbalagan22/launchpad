@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Button, TrustBadge } from "@/components/ui";
+import { RoleButton } from "@/components/role-link";
 import type { Trust } from "@/schemas";
 
 // Static marketing copy from the design export. No product data is read here.
@@ -32,7 +33,7 @@ export default function Landing() {
             <p className="text-xl mb-8 max-w-[480px]">Complete real projects for local businesses. Earn skills employers can trust.</p>
             <div className="flex gap-4 flex-wrap mb-8">
               <Button href="/onboarding/student">I&apos;m a student</Button>
-              <Button href="/business/new" variant="secondary">I&apos;m a business</Button>
+              <RoleButton role="business" href="/business/new" variant="secondary">I&apos;m a business</RoleButton>
             </div>
             <p className="text-sm max-w-[440px] pt-4 border-t border-line">Example: build a website for a local bakery, get a verified web development badge.</p>
           </div>
@@ -107,7 +108,7 @@ export default function Landing() {
           <div className="text-sm font-semibold text-brand mb-2">For businesses</div>
           <h2 className="text-[28px] sm:text-[40px] leading-[1.15] tracking-[-0.02em] font-semibold mb-4 text-ink">Describe the work in plain words.</h2>
           <p className="max-w-[440px] mb-6">Launchpad turns your description into deliverables, milestones, an hour estimate, and a pay range or a volunteer option. You edit anything before you publish.</p>
-          <Button href="/business/new">Post a project</Button>
+          <RoleButton role="business" href="/business/new">Post a project</RoleButton>
         </div>
         <div className="flex-[1_1_400px] min-w-0 md:order-1 border border-line rounded-card overflow-hidden" aria-hidden>
           <div className="p-6"><div className="text-xs font-medium mb-2">Describe what you need</div><div className="border border-line rounded-control p-3 text-sm text-ink">I need a simple website with our menu, hours, and an online order form.</div></div>
@@ -122,7 +123,7 @@ export default function Landing() {
       <section className="max-w-[1200px] mx-auto px-8 pb-24">
         <div className="border border-line rounded-card p-12 flex flex-wrap gap-8 items-center justify-between">
           <h2 className="text-[28px] leading-[1.2] tracking-[-0.02em] font-semibold text-ink max-w-[480px]">Start with a profile or a project.</h2>
-          <div className="flex gap-4 flex-wrap"><Button href="/onboarding/student">I&apos;m a student</Button><Button href="/business/new" variant="secondary">I&apos;m a business</Button></div>
+          <div className="flex gap-4 flex-wrap"><Button href="/onboarding/student">I&apos;m a student</Button><RoleButton role="business" href="/business/new" variant="secondary">I&apos;m a business</RoleButton></div>
         </div>
       </section>
 

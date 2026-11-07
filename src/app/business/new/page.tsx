@@ -1,10 +1,10 @@
 "use client";
 
 import { useRef, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Check, Plus, Trash2 } from "lucide-react";
 import { PageContainer } from "@/components/nav";
+import { RoleButton } from "@/components/role-link";
 import { AiNote, Badge, Button, Card, Chip, EmptyState, Input, Skeleton, Spinner, cx, toast } from "@/components/ui";
 import { useQuery, useSession } from "@/hooks/use-query";
 import { ai, projects, students, ServiceError } from "@/services";
@@ -38,7 +38,7 @@ export default function NewProject() {
   const [publishing, setPublishing] = useState(false);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
-  if (role === "student") return <PageContainer><EmptyState title="Posting projects is a business feature" body="Switch to Business view in the top bar." action={<Link href="/projects" className="text-sm font-semibold">Back to projects</Link>} /></PageContainer>;
+  if (role === "student") return <PageContainer><EmptyState title="Posting projects is a business feature" body="Switch to Business view in the top bar." action={<RoleButton role="business" href="/business/new">Switch to Business view</RoleButton>} /></PageContainer>;
   const b = biz.data;
   const volunteerOk = b?.kind === "nonprofit";
 

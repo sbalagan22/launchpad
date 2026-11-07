@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { PageContainer } from "@/components/nav";
+import { RoleButton } from "@/components/role-link";
 import { Badge, Chip, EmptyState, ErrorState, MatchPill, ProgressBar, Segmented, Skeleton, Table, TableRow } from "@/components/ui";
 import { Stat, dueLabel, milestoneProgress, payLabel } from "@/components/feature";
 import { useQuery, useSession } from "@/hooks/use-query";
@@ -28,7 +29,7 @@ export default function Feed() {
   if (role === "business") {
     return (
       <PageContainer>
-        <EmptyState title="You are viewing as a business" body="The project feed is for students. Switch to Student view in the top bar, or head to your dashboard." action={<Link href="/business" className="text-sm font-semibold">Go to business dashboard</Link>} />
+        <EmptyState title="You are viewing as a business" body="The project feed is for students. Switch to Student view in the top bar, or head to your dashboard." action={<RoleButton role="student" href="/projects">Switch to Student view</RoleButton>} />
       </PageContainer>
     );
   }

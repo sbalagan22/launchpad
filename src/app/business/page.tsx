@@ -1,9 +1,9 @@
 "use client";
 
 import { Suspense, useState } from "react";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { PageContainer } from "@/components/nav";
+import { RoleButton } from "@/components/role-link";
 import { ApplicantsPanel, ApprovalCard, ReviewCard } from "@/components/business-panels";
 import { StatusBadge, milestoneProgress, SectionTitle } from "@/components/feature";
 import { Button, EmptyState, ErrorState, PageSkeleton, ProgressBar, Select, Table, TableRow } from "@/components/ui";
@@ -22,7 +22,7 @@ function Dashboard() {
   const attention = useQuery(bid ? `attention:${bid}` : null, () => workspace.listAttention(bid!));
   const [focus, setFocus] = useState<string | null>(null);
 
-  if (role === "student") return <PageContainer><EmptyState title="You are viewing as a student" body="Switch to Business view in the top bar to manage projects." action={<Link href="/projects" className="text-sm font-semibold">Back to projects</Link>} /></PageContainer>;
+  if (role === "student") return <PageContainer><EmptyState title="You are viewing as a student" body="Switch to Business view in the top bar to manage projects." action={<RoleButton role="business" href="/business">Switch to Business view</RoleButton>} /></PageContainer>;
   if (list.error) return <PageContainer><ErrorState error={list.error} onRetry={list.refetch} /></PageContainer>;
   if (!biz.data || !list.data || !attention.data) return <PageContainer><PageSkeleton rows={6} /></PageContainer>;
 

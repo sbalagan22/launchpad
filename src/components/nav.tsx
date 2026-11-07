@@ -8,6 +8,7 @@ import { Bell } from "lucide-react";
 import { useApp } from "@/store";
 import { useQuery, useSession } from "@/hooks/use-query";
 import { misc } from "@/services";
+import { RoleTextLink } from "@/components/role-link";
 import { Button, cx } from "@/components/ui";
 
 export function Logo({ href = "/" }: { href?: string }) {
@@ -26,7 +27,7 @@ export function LandingNav() {
         <Logo />
         <nav aria-label="Primary" className="hidden sm:flex gap-8 text-sm font-medium">
           <Link href="/onboarding/student" className="text-body! hover:text-ink!">For students</Link>
-          <Link href="/business/new" className="text-body! hover:text-ink!">For businesses</Link>
+          <RoleTextLink role="business" href="/business/new" className="text-body! hover:text-ink!">For businesses</RoleTextLink>
           <a href="#how" className="text-body! hover:text-ink!">How it works</a>
           <Link href="/impact" className="text-body! hover:text-ink!">Impact</Link>
         </nav>
