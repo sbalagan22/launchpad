@@ -57,6 +57,16 @@ export function switchToUser(role: "student" | "business", userId: string) {
   useApp.getState().setSession({ role, userId });
 }
 
+export async function whoAmI(role: "student" | "business", userId: string) {
+  return read(z.object({ name: z.string(), slug: z.string() }), (db) => {
+    if (role === "student") {
+      const s = db.students.find((x) => x.id === userId);
+      return { name: s?.name ?? "Unknown", slug: s?.slug ?? "" };
+    }
+    return { name: db.businesses.find((x) => x.id === userId)?.name ?? "Unknown", slug: "" };
+  });
+}
+
 /* ---------- Dev ---------- */
 // MOCK: restores the seed dataset.
 export async function resetDemoData() {

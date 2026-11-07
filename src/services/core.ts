@@ -9,9 +9,15 @@ export class ServiceError extends Error {
   }
 }
 
+let quietUntil = 0;
+/** Reads issued right after a write skip the delay so the UI updates as soon as the write lands. */
+export function markFresh(): void {
+  quietUntil = Date.now() + 400;
+}
+
 // MOCK: simulated network latency (300 to 900 ms) for every service call.
 export function latency(min = 300, max = 900): Promise<void> {
-  const ms = typeof window === "undefined" ? 0 : min + Math.random() * (max - min);
+  const ms = typeof window === "undefined" || Date.now() < quietUntil ? 0 : min + Math.random() * (max - min);
   return new Promise((r) => setTimeout(r, ms));
 }
 
@@ -36,5 +42,6 @@ export async function write<S extends ZodType>(schema: S, fn: (db: Db) => { db: 
   const out = schema.safeParse(result);
   if (!out.success) throw new ServiceError("invalid_output", `Service returned unexpected data: ${out.error.issues[0]?.message}`);
   useApp.getState().commit(() => db);
+  markFresh();
   return out.data;
 }
