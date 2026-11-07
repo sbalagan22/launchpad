@@ -6,7 +6,9 @@ import { Db, Session } from "@/schemas";
 import { buildSeed } from "@/mocks/seed";
 
 export const DEMO_STUDENT_ID = "stu_aisha";
-export const DEMO_BUSINESS_ID = "biz_sunrise";
+export const DEMO_BUSINESS_ID = "biz_corner";
+export const DEMO_FOUNDER_ID = "biz_reroute";
+export const DEMO_REVIEWER_ID = "rev_noor";
 const STORAGE_KEY = "launchpad-demo-v1";
 
 type AppState = {

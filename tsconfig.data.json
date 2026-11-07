@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.json",
+  "include": ["next-env.d.ts", "src/schemas/**/*.ts", "src/mocks/**/*.ts", "src/services/**/*.ts", "src/lib/**/*.ts", "src/store/**/*.ts", "scripts/**/*.ts", "tests/unit/**/*.ts"],
+  "exclude": ["node_modules", "launchpad_mock"]
+}

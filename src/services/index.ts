@@ -1,10 +1,18 @@
-// Pages import from here only; they never touch /src/mocks directly.
-export * as students from "./students";
-export * as projects from "./projects";
-export * as applications from "./applications";
-export * as workspace from "./workspace";
-export * as ai from "./ai";
-export * as certs from "./certs";
-export * as misc from "./misc";
-export { computeMatch } from "./matching";
+// The UI imports from here only. Names follow src/services/contract.ts.
+export { auth } from "./auth";
+export { projects } from "./projects";
+export { scoping } from "./scoping";
+export { applications } from "./applications";
+export { workspace } from "./workspace";
+export { review } from "./review";
+export { certs } from "./certs";
+export { startups } from "./startups";
+export { pipeline } from "./pipeline";
+export { profile } from "./profile";
+export { impact } from "./impact";
+export { matching } from "./matching";
+export { search } from "./search";
+export { notifications } from "./notifications";
+export { admin } from "./admin";
 export { ServiceError } from "./core";
+export type * from "./contract";

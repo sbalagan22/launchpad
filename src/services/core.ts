@@ -45,3 +45,10 @@ export async function write<S extends ZodType>(schema: S, fn: (db: Db) => { db: 
   markFresh();
   return out.data;
 }
+
+/** Temporary stand-in for services that are not implemented yet. */
+export function stubApi<T extends object>(name: string): T {
+  return new Proxy({} as T, {
+    get: (_t, prop) => () => Promise.reject(new ServiceError("not_implemented", `${name}.${String(prop)} is not implemented yet`)),
+  });
+}

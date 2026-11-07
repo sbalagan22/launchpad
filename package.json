@@ -9,7 +9,9 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "validate:mocks": "tsx scripts/validate-mocks.ts",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "typecheck:data": "tsc --noEmit -p tsconfig.data.json",
+    "test:unit": "vitest run"
   },
   "dependencies": {
     "lucide-react": "^1.70.0",
@@ -32,7 +34,8 @@
     "eslint-config-next": "16.4.5",
     "tailwindcss": "^4",
     "tsx": "^4.23.15",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.12"
   },
   "overrides": {
     "magic-string": "0.30.21"

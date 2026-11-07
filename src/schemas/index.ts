@@ -33,7 +33,7 @@ export const PROJECT_TYPE_LABEL: Record<ProjectType, string> = {
   admin: "Business and operations",
 };
 
-export const ProjectStatus = z.enum(["open", "in_progress", "in_review", "completed"]);
+export const ProjectStatus = z.enum(["draft", "open", "in_progress", "in_review", "completed"]);
 export type ProjectStatus = z.infer<typeof ProjectStatus>;
 export const MilestoneStatus = z.enum(["open", "in_progress", "in_review", "approved"]);
 export type MilestoneStatus = z.infer<typeof MilestoneStatus>;
@@ -317,6 +317,7 @@ export const HiringEntry = z.object({
   businessId: Id,
   studentId: Id,
   projectId: Id,
+  applicationId: Id.optional(),
   stage: PipelineStage,
   invite: z.object({ sentAt: IsoDate, role: z.string(), message: z.string() }).optional(),
   updatedAt: IsoDate,
