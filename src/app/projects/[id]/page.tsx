@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Check, Minus } from "lucide-react";
 import { PageContainer } from "@/components/nav";
-import { StatusBadge, payLabel, dueLabel } from "@/components/feature";
+import { StatusBadge, dueLabel } from "@/components/feature";
 import { ProposalModal } from "@/components/proposal-modal";
 import { Badge, Button, Card, ErrorState, Monogram, PageSkeleton } from "@/components/ui";
 import { useQuery, useSession } from "@/hooks/use-query";

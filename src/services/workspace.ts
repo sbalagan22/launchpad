@@ -162,3 +162,8 @@ export async function submitReview(input: z.input<typeof ReviewInput>) {
     };
   });
 }
+
+/** In-review projects for a business: waiting for a milestone approval or for the final rating. */
+export async function listAttention(businessId: string) {
+  return read(z.array(WorkspaceView), (db) => db.projects.filter((p) => p.businessId === businessId && p.status === "in_review" && p.studentId).map((p) => build(db, p.id)));
+}

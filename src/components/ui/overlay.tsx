@@ -23,8 +23,13 @@ export function Modal({ open, onClose, title, children, wide, labelledBy }: { op
         const f = focusables();
         if (!f.length) return;
         const first = f[0], last = f[f.length - 1];
-        if (e.shiftKey && document.activeElement === first) (e.preventDefault(), last.focus());
-        else if (!e.shiftKey && document.activeElement === last) (e.preventDefault(), first.focus());
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
       }
     };
     document.addEventListener("keydown", onKey);

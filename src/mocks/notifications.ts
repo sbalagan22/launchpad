@@ -1,5 +1,4 @@
 import type { Notification } from "@/schemas";
-import { daysFromNow } from "@/lib/dates";
 
 // MOCK: 25 hand-written notifications across students and businesses.
 type Row = [userId: string, title: string, body: string, href: string, read: boolean, hoursAgo: number];
