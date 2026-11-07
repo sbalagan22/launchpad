@@ -3,7 +3,7 @@ import { useApp, getDb } from "@/store";
 import type { Db } from "@/schemas";
 
 export class ServiceError extends Error {
-  constructor(public code: string, message: string) {
+  constructor(public code: string, message: string, public details?: unknown) {
     super(message);
     this.name = "ServiceError";
   }
