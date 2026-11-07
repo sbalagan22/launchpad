@@ -55,6 +55,7 @@ export function seedReviewers(): Reviewer[] {
     r("rev_sana", "Sana Qureshi", "Alum", "Data analyst, class of 2022", ["data", "admin"], "York statistics alum who now builds dashboards for a health network."),
     r("rev_mei", "Mei Tanaka", "Senior student", "Design, AMPD", ["design", "marketing", "writing"], "Fourth-year design student who has reviewed brand work for student clubs."),
     r("rev_wei", "Prof. Wei Lin", "Professor", "Visualization and communication", ["data", "design", "writing"], "Teaches information design and chairs a thesis committee."),
+    r("rev_eli", "Eli Rowan", "Alum", "Studio lead, Paper Lantern Games", ["web"], "York alum and studio lead who has shipped three indie titles and runs the QA process."),
     r("rev_mentor", "Dana Whitfield", "YSpace mentor", "Entrepreneur in residence", ["web", "admin", "marketing", "data"], "Former product lead who mentors early-stage founders."),
   ];
 }

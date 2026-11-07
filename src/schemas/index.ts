@@ -214,6 +214,7 @@ export const DemoCredential = z.object({
   issuedAt: IsoDate.optional(),
   expiresAt: IsoDate.optional(),
   reason: z.string().optional(),
+  code: z.enum(["not_found", "name_mismatch", "expired"]).optional(),
 });
 export type DemoCredential = z.infer<typeof DemoCredential>;
 

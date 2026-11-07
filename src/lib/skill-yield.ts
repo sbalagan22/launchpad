@@ -45,16 +45,16 @@ export function computeSkillYield(p: YieldInput): YieldResult {
     deliverable = clamp(avg - (ds.length === 1 ? 2 : 0));
   }
 
-  const reviewer = p.reviewerCount === 0 ? 0 : clamp(12 + (p.reviewerCount > 1 ? 4 : 0) + (p.rubricCount >= 3 ? 4 : 0));
+  const reviewer = p.reviewerCount === 0 ? 0 : clamp(12 + (p.reviewerCount > 1 ? 4 : 0) + (p.rubricCount >= 4 ? 4 : p.rubricCount === 3 ? 2 : 0));
 
   const done = (p.doneLooksLike ?? "").trim();
   let portfolio = 0;
-  if (done) portfolio = clamp(8 + (SHAREABLE.test(`${done} ${ds.join(" ")}`) ? 6 : 0) + (done.length >= 60 ? 6 : 3));
+  if (done) portfolio = clamp(6 + (SHAREABLE.test(`${done} ${ds.join(" ")}`) ? 6 : 0) + (done.length >= 100 ? 8 : done.length >= 60 ? 5 : 2));
   if (repetitive) portfolio = Math.min(portfolio, 6);
 
   const msHours = p.milestones.reduce((a, m) => a + m.hours, 0);
   const scope = clamp(
-    (p.milestones.length >= 2 && p.milestones.length <= 4 ? 8 : 0) +
+    (p.milestones.length >= 3 && p.milestones.length <= 4 ? 8 : p.milestones.length === 2 ? 5 : 0) +
       (p.milestones.length && Math.abs(msHours - p.hours) <= 1 ? 6 : 0) +
       (p.hours >= 4 && p.hours <= 25 ? 3 : 0) +
       (`${p.hook ?? ""} ${p.description ?? ""}`.trim().length >= 40 ? 3 : 0),
