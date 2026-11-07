@@ -2,18 +2,19 @@
 
 @theme {
   --color-ink: #0a0a0a;
-  --color-body: #425466;
-  --color-line: #e3e8ee;
-  --color-line-strong: #c9d1db;
-  --color-surface: #f6f9fc;
-  --color-muted: #8792a2;
-  --color-brand: #635bff;
-  --color-brand-hover: #5851e6;
-  --color-tint: #efeeff;
+  --color-body: #4b4b55;
+  --color-line: #e7e7ea;
+  --color-line-strong: #cfcfd4;
+  --color-surface: #f7f7f8;
+  --color-muted: #8a8a94;
+  --color-brand: #e31836;
+  --color-brand-hover: #c4122d;
+  --color-tint: #fdecef;
   --color-ok: #0b7a4b;
   --color-ok-bg: #e6f6ee;
-  --color-warn: #8a5a00;
-  --color-warn-bg: #fff4dc;
+  --color-brand-press: #a80f26;
+  --color-warn: #9a5b00;
+  --color-warn-bg: #fff4df;
   --color-bad: #b42318;
   --color-bad-bg: #fdecea;
 
@@ -28,6 +29,7 @@
   --animate-rise: rise 0.2s ease-out;
   --animate-spin-slow: spin 0.8s linear infinite;
   --animate-pulse-soft: pulse-soft 1.4s ease-in-out infinite;
+  --animate-shimmer: shimmer 1.4s linear infinite;
 
   @keyframes rise {
     from {
@@ -37,6 +39,14 @@
     to {
       opacity: 1;
       transform: none;
+    }
+  }
+  @keyframes shimmer {
+    from {
+      background-position: -200% 0;
+    }
+    to {
+      background-position: 200% 0;
     }
   }
   @keyframes pulse-soft {

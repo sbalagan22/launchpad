@@ -34,3 +34,23 @@ export function daysBetween(a: string, b: string): number {
 export function weeksUntil(iso: string): number {
   return Math.max(1, Math.round((new Date(iso).getTime() - Date.now()) / (7 * DAY)));
 }
+
+/**
+ * Moves a date that lands in a typical exam period to the day before it starts.
+ * Windows are approximate (fall exams roughly Dec 5 to 22, winter exams roughly Apr 10 to 30);
+ * confirm against the York academic calendar before relying on them.
+ */
+export function termSafe(iso: string): string {
+  const d = new Date(iso);
+  const m = d.getMonth(), day = d.getDate();
+  const inFall = m === 11 && day >= 5 && day <= 22;
+  const inWinter = m === 3 && day >= 10 && day <= 30;
+  if (inFall) d.setDate(4);
+  else if (inWinter) d.setDate(9);
+  return d.toISOString();
+}
+
+/** Days from now, shifted out of exam periods. */
+export function deadlineIn(n: number): string {
+  return termSafe(daysFromNow(n));
+}
