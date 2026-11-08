@@ -7,6 +7,7 @@ export const payLabel = (p: Project) => (p.payType === "volunteer" ? "Volunteer"
 export const dueLabel = (iso: string) => fmtDate(iso);
 
 const STATUS: Record<ProjectStatus, { label: string; tone: "neutral" | "brand" | "warn" | "ok" }> = {
+  draft: { label: "Draft", tone: "neutral" },
   open: { label: "Open", tone: "neutral" },
   in_progress: { label: "In progress", tone: "brand" },
   in_review: { label: "In review", tone: "warn" },

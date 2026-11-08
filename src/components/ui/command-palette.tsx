@@ -80,9 +80,16 @@ export function CommandPalette() {
 
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Escape") close();
-    else if (e.key === "ArrowDown") (e.preventDefault(), setIdx((i) => Math.min(rows.length - 1, i + 1)));
-    else if (e.key === "ArrowUp") (e.preventDefault(), setIdx((i) => Math.max(0, i - 1)));
-    else if (e.key === "Enter") (e.preventDefault(), go(rows[idx]));
+    else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setIdx((i) => Math.min(rows.length - 1, i + 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setIdx((i) => Math.max(0, i - 1));
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      go(rows[idx]);
+    }
   };
 
   return (
