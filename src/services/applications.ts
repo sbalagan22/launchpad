@@ -2,9 +2,7 @@ import { z } from "zod";
 import { Application, type Db, type HiringEntry, type Thread } from "@/schemas";
 import { ApplicationView } from "@/schemas/views";
 import { newId } from "@/lib/ids";
-import { proposalText as draftProposalText } from "@/mocks/world";
 import { PIPELINE_EMPLOYERS } from "@/mocks/seed";
-import { getDb } from "@/store";
 import type { ApplicationsApi } from "./contract";
 import { ServiceError, latency, parseInput, read, write } from "./core";
 import { matchOf, me, requireStudent } from "./helpers";
@@ -83,15 +81,5 @@ export const applications: ApplicationsApi = {
         result: accepted,
       };
     });
-  },
-
-  async draftProposal(projectId) {
-    await latency(400, 800);
-    const db = getDb();
-    const s = requireStudent(db);
-    const p = db.projects.find((x) => x.id === projectId);
-    if (!p) throw new ServiceError("not_found", "Project not found");
-    // MOCK: templated from the real profile and project facts. Organizes what the student already knows. Never a deliverable.
-    return { text: draftProposalText(s, p, db.businesses.find((b) => b.id === p.businessId)!), source: "mock" as const };
   },
 };

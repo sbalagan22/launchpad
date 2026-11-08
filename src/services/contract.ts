@@ -90,8 +90,6 @@ export interface ApplicationsApi {
   listForStudent(): Promise<ApplicationView[]>;
   listForProject(projectId: string): Promise<ApplicationView[]>;
   decide(applicationId: string, decision: "accepted" | "rejected"): Promise<Application>;
-  /** Draft helper for the proposal textarea: templated from the real profile. Poster-neutral, never a deliverable. */
-  draftProposal(projectId: string): Promise<{ text: string; source: "real" | "mock" }>;
 }
 
 export interface WorkspaceApi {

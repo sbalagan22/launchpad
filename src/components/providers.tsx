@@ -2,7 +2,7 @@
 
 import { useEffect, type ReactNode } from "react";
 import { useApp } from "@/store";
-import { Toaster, CommandPalette } from "@/components/ui";
+import { Toaster } from "@/components/ui";
 import { Shell } from "@/components/nav";
 import { DevMenu } from "@/components/dev-menu";
 import { MotionRoot } from "@/components/motion";
@@ -16,7 +16,6 @@ export function Providers({ children }: { children: ReactNode }) {
     <MotionRoot>
       <Shell>{children}</Shell>
       <DevMenu />
-      <CommandPalette />
       <Toaster />
     </MotionRoot>
   );

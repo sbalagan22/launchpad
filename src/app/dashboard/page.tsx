@@ -14,13 +14,13 @@ import { shortDate } from "@/lib/utils";
 const STAGE_LABEL = { applied: "Applied", interviewing: "Interviewing", trial: "Trial", offer: "Offer" } as const;
 
 export default function Dashboard() {
-  const { user, demoRole, hydrated } = useMe();
+  const { user, kind, hydrated } = useMe();
   const sid = user?.student?.id ?? null;
   const prof = useQuery(sid ? `dash:profile:${sid}` : null, () => profile.getProfile(sid!));
   const recs = useQuery(sid ? `dash:recs:${sid}` : null, () => projects.list({ status: ["open"], sort: "match" }));
   const apps = useQuery(sid ? `dash:apps:${sid}` : null, () => applications.listForStudent());
 
-  if (hydrated && user && demoRole !== "student") {
+  if (hydrated && user && kind !== "student") {
     return <PageContainer><EmptyState title="The dashboard is for students" body="Use the account menu to switch to the student role." action={<Button href="/login">Switch demo role</Button>} /></PageContainer>;
   }
   if (prof.error) return <PageContainer><ErrorState error={prof.error} onRetry={prof.refetch} /></PageContainer>;
@@ -30,10 +30,11 @@ export default function Dashboard() {
   const active = apps.data?.find((a) => a.application.status === "accepted" && a.project.status !== "completed");
   const nextMs = active?.project.milestones.find((m) => m.status !== "approved");
   const stats: [string, number, string][] = [
-    ["Active projects", d.active, ""],
-    ["Applications", d.applied, ""],
+    ["Completed", d.completed.length, ""],
+    ["Active", d.active, ""],
+    ["Applied", d.applied, ""],
     ["Verified hours", d.verifiedHours, ""],
-    ["Profile strength", d.strength, "%"],
+    ["Average review", d.averageReview, ""],
   ];
 
   return (
@@ -41,11 +42,11 @@ export default function Dashboard() {
       <h1 className="h1 mb-1">Hi {firstName}.</h1>
       <p className="mb-8">{d.student.program}, {d.student.faculty}. Here is where things stand.</p>
 
-      <Stagger className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <Stagger className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
         {stats.map(([label, value, suffix]) => (
           <Card key={label} className="p-5">
             <div className="text-xs mb-1">{label}</div>
-            <div className="text-3xl font-semibold tracking-[-0.02em] text-ink"><CountUp value={value} suffix={suffix} /></div>
+            <div className="text-3xl font-semibold tracking-[-0.02em] text-ink"><CountUp value={value} suffix={suffix} decimals={label === "Average review" ? 2 : 0} /></div>
           </Card>
         ))}
       </Stagger>

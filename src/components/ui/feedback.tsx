@@ -92,7 +92,7 @@ export function WhatNext({ steps, title = "What happens next" }: { steps: string
 }
 
 export type TrustLevel = "issuer" | "reviewed" | "self";
-export const TRUST_TEXT: Record<TrustLevel, string> = { issuer: "Issuer verified", reviewed: "Reviewer approved", self: "Not verified" };
+export const TRUST_TEXT: Record<TrustLevel, string> = { issuer: "Issuer verified", reviewed: "Approved by poster", self: "Not verified" };
 
 /** Issuer verified and reviewer approved: red filled check. Self-reported: gray outline, "Not verified". */
 export function TrustBadge({ trust, showLabel = true }: { trust: TrustLevel; showLabel?: boolean }) {
@@ -120,47 +120,10 @@ export function YSpaceBadge({ label = "YSpace venture" }: { label?: string }) {
 export function MatchRing({ score, size = 48 }: { score: number; size?: number }) {
   return (
     <span data-testid="match-ring" data-score={score} className="inline-flex flex-none">
-      <AnimatedRing value={score} size={size} stroke={size > 44 ? 5 : 4} label={`${score} percent match`}>
+      <AnimatedRing value={score} size={size} stroke={size > 44 ? 5 : 4} label={`Match score ${score} out of 100`}>
         {score}
         <span className="text-[0.6em] font-medium">%</span>
       </AnimatedRing>
-    </span>
-  );
-}
-
-type YieldLike = { total: number; factors: { key: string; label: string; score: number; max: number; hint: string }[] };
-
-/** Skill yield ring. Hover or focus shows the five factors. */
-export function SkillYieldRing({ result, size = 48 }: { result: YieldLike; size?: number }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <span className="relative inline-flex" onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
-      <button type="button" data-testid="yield-ring" data-score={result.total} aria-expanded={open} aria-label={`Skill yield ${result.total} out of 100. Show breakdown.`} onFocus={() => setOpen(true)} onBlur={() => setOpen(false)} className="rounded-full cursor-help p-0 bg-transparent border-0">
-        <AnimatedRing value={result.total} size={size} stroke={size > 44 ? 5 : 4} tone="ink" label={`Skill yield ${result.total} out of 100`} />
-      </button>
-      <AnimatePresence>
-        {open && (
-          <motion.div role="tooltip" initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0, transition: t.hover }} exit={{ opacity: 0, transition: t.hover }} className="absolute z-30 top-full right-0 mt-2 w-72 bg-white border border-line rounded-card shadow-float p-4 text-left">
-            <p className="text-sm font-semibold text-ink mb-2">Skill yield {result.total}/100</p>
-            <ul className="flex flex-col gap-2 list-none p-0 m-0">
-              {result.factors.map((f) => (
-                <li key={f.key} className="text-xs">
-                  <div className="flex justify-between text-ink font-medium">
-                    <span>{f.label}</span>
-                    <span>
-                      {f.score}/{f.max}
-                    </span>
-                  </div>
-                  <div className="h-1 bg-line rounded-full overflow-hidden my-1">
-                    <div className="h-full bg-ink rounded-full" style={{ width: `${(f.score / f.max) * 100}%` }} />
-                  </div>
-                  <span>{f.hint}</span>
-                </li>
-              ))}
-            </ul>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </span>
   );
 }

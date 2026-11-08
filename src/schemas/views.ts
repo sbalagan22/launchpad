@@ -133,6 +133,7 @@ export const ProfileView = z.object({
   roadmap: z.object({ earned: z.array(ClaimView), in_progress: z.array(ClaimView), planned: z.array(ClaimView) }),
   badges: z.array(Badge),
   verifiedHours: z.number(),
+  averageReview: z.number(),
   active: z.number().int(),
   applied: z.number().int(),
   strength: z.number().int(),

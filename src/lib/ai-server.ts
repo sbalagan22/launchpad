@@ -32,10 +32,3 @@ export async function structured<S extends z.ZodType>(schema: S, system: string,
   if (!block) throw new Error("No structured output");
   return schema.parse(block.input);
 }
-
-export async function plainText(system: string, prompt: string): Promise<string> {
-  const raw = await call({ system, messages: [{ role: "user", content: prompt }], max_tokens: 700 });
-  const text = Reply.parse(raw).content.find((c) => c.type === "text")?.text;
-  if (!text) throw new Error("No text");
-  return text;
-}

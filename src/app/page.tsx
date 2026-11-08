@@ -10,9 +10,9 @@ import { EMPLOYER_LABEL } from "@/schemas";
 import { money, shortDate } from "@/lib/utils";
 
 const STEPS = [
-  ["01", "Describe the need", "Posters write what they need in plain words. Launchpad turns it into a scoped brief with deliverables, milestones, hours, pay and a rubric."],
+  ["01", "Describe the need", "Posters write what they need in plain words. Launchpad turns it into a scoped brief with deliverables, milestones, hours, pay and acceptance criteria."],
   ["02", "Apply and build", "Students apply with a short proposal, chat with the poster, and submit a link for each milestone."],
-  ["03", "Get reviewed, keep the evidence", "A York reviewer scores the work against the rubric. Approved projects become skill evidence on a public profile."],
+  ["03", "Get reviewed, keep the evidence", "The poster checks the work against the acceptance criteria and rates it. Approved projects become skill evidence on a public profile."],
 ];
 
 const EMPLOYERS = [
@@ -63,17 +63,13 @@ function HeroListing() {
             <span>{m.amount ? money(m.amount) : `${m.hours}h`}</span>
           </div>
         ))}
-        <div className="flex items-center gap-3 pt-4 border-t border-line mt-2 text-sm">
-          <MatchRing score={card.yield.total} size={40} />
-          <span>Skill yield {card.yield.total}/100: how much a student can learn and show from this project.</span>
-        </div>
       </div>
     </Card>
   );
 }
 
 function FeaturedListings() {
-  const { data, loading } = useQuery("landing:featured", () => projects.list({ sort: "yield" }));
+  const { data, loading } = useQuery("landing:featured", () => projects.list({ sort: "newest" }));
   const items = data?.items.slice(0, 3) ?? [];
   return (
     <div className="grid md:grid-cols-3 gap-4">
@@ -108,7 +104,7 @@ function StartupBand() {
           <div className="flex flex-wrap items-end justify-between gap-6 mb-10">
             <div className="max-w-xl">
               <h2 id="startups-h" className="text-[28px] sm:text-[40px] leading-[1.15] tracking-[-0.02em] font-semibold mb-3 text-white">Build with York&apos;s startups</h2>
-              <p className="text-white/80">Work on a real product with a founder, get reviewed by a York reviewer, and if it goes well, get invited to continue.</p>
+              <p className="text-white/80">Work on a real product with a founder, get your work approved by the founder, and if it goes well, get invited to continue.</p>
             </div>
             <Button href="/startups" variant="secondary">
               See all startups <ArrowRight size={16} aria-hidden />
@@ -170,7 +166,7 @@ export default function Landing() {
               <Button href="/business/new" variant="secondary">I need help with a project</Button>
             </div>
             <p className="text-sm max-w-[440px] pt-4 border-t border-line flex items-center gap-2 flex-wrap">
-              <TrustBadge trust="reviewed" /> means a York reviewer approved the work. Anything a student types stays <TrustBadge trust="self" />.
+              <TrustBadge trust="reviewed" /> means the poster approved the work. Anything a student types stays <TrustBadge trust="self" />.
             </p>
           </div>
           <div className="flex-[1_1_440px] min-w-0">

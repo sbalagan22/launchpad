@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Bookmark, Clock } from "lucide-react";
-import { Badge, Card, MatchRing, SkillYieldRing, YSpaceBadge, cx } from "@/components/ui";
+import { Badge, Card, MatchRing, YSpaceBadge, cx } from "@/components/ui";
 import { EMPLOYER_LABEL } from "@/schemas";
 import type { ProjectCard as Card_ } from "@/services";
 import { money, shortDate } from "@/lib/utils";
@@ -36,13 +36,6 @@ export function ProjectCardView({ card, onToggleSave }: { card: Card_; onToggleS
             <b className="text-ink font-semibold">{payText(p)}</b>
             <span>Due {shortDate(p.deadline)}</span>
           </div>
-          <div className="flex gap-1 flex-wrap mt-3">
-            {p.skills.slice(0, 5).map((s) => (
-              <span key={s} className="text-xs px-2 py-0.5 rounded-lg border border-line bg-white">
-                {s}
-              </span>
-            ))}
-          </div>
         </div>
         <div className="flex flex-col items-center gap-3 flex-none relative z-10">
           {card.match && (
@@ -51,10 +44,6 @@ export function ProjectCardView({ card, onToggleSave }: { card: Card_; onToggleS
               <span>Match</span>
             </div>
           )}
-          <div className="flex flex-col items-center text-xs gap-1">
-            <SkillYieldRing result={card.yield} size={40} />
-            <span>Yield</span>
-          </div>
         </div>
       </div>
       {onToggleSave && (

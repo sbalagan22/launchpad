@@ -28,6 +28,7 @@ function profileOf(db: Db, s: Student) {
     roadmap: { earned: claims.filter((c) => c.claim.status === "earned"), in_progress: claims.filter((c) => c.claim.status === "in_progress"), planned: claims.filter((c) => c.claim.status === "planned") },
     badges: db.badges.filter((b) => b.studentId === s.id),
     verifiedHours: completed.reduce((a, c) => a + c.project.hours, 0),
+    averageReview: (() => { const rs = db.reviews.filter((r) => r.studentId === s.id); return rs.length ? Math.round((rs.reduce((a, r) => a + r.rating, 0) / rs.length) * 100) / 100 : 0; })(),
     active: db.projects.filter((p) => p.studentId === s.id && p.status === "in_progress").length,
     applied: db.applications.filter((a) => a.studentId === s.id && a.status === "pending").length,
     strength: Math.round((items.filter((i) => i.done).length / items.length) * 100), strengthItems: items,

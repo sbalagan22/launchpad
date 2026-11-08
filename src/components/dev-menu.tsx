@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Modal, Button, Select, toast } from "@/components/ui";
 import { admin, auth } from "@/services";
 import { useQuery, useSession } from "@/hooks/use-query";
-import { HOME, roleOf } from "@/components/use-me";
+import { HOME, kindOf } from "@/components/use-me";
 
 /** Hidden developer menu. Open with Ctrl+Shift+D (Cmd+Shift+D on macOS). */
 export function DevMenu() {
@@ -31,7 +31,6 @@ export function DevMenu() {
     ? [
         ...users.students.map((u) => ({ value: `student:${u.id}`, label: `Student: ${u.name}` })),
         ...users.businesses.map((u) => ({ value: `business:${u.id}`, label: `Business: ${u.name}` })),
-        ...users.reviewers.map((u) => ({ value: `reviewer:${u.id}`, label: `Reviewer: ${u.name}` })),
       ]
     : [];
 
@@ -40,10 +39,10 @@ export function DevMenu() {
     if (!id) return;
     setBusy(true);
     try {
-      const u = await auth.switchTo(role as "student" | "business" | "reviewer", id);
+      const u = await auth.switchTo(role as "student" | "business", id);
       toast.success(`Now signed in as ${u.displayName}`);
       setOpen(false);
-      const r = roleOf(u);
+      const r = kindOf(u);
       router.push(r ? HOME[r] : "/");
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Could not switch user");

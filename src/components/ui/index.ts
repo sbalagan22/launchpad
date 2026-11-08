@@ -3,4 +3,3 @@ export * from "./forms";
 export * from "./overlay";
 export * from "./feedback";
 export * from "./table";
-export * from "./command-palette";
