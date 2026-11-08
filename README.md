@@ -15,7 +15,7 @@ BASE_URL=http://localhost:3000 npm run test:e2e   # playwright demo script (norm
 ```
 
 ## Demo accounts
-Aisha Khan (CS student), Priya Nair (business student) and Omar Haddad (founder, Reroute). The source of truth is `demo_personas.md`.
+Aisha Khan (CS student), Priya Nair (business student) and Fares Tamraz (founder, Reroute). The source of truth is `demo_personas.md`.
 
 ## Real vs mocked
 | Area | Status |
@@ -31,12 +31,12 @@ Aisha Khan (CS student), Priya Nair (business student) and Omar Haddad (founder,
 | Payments, email, file storage | MOCK |
 
 ## Demo script
-1. Omar posts "Instrument the Waitlist" from a streamed brief and publishes.
+1. Fares posts "Instrument the Waitlist" from a streamed brief and publishes.
 2. Aisha sees the new match and applies.
-3. Omar accepts her and approves her pending Reroute milestone 2 with ratings and a review.
-4. Aisha submits milestone 3, Omar gives final approval, the badge unlocks and the evidence appears on her profile. She adds GitHub Foundations with the passing demo ID, and a failing ID falls back to self-reported.
-5. Omar moves her to Trial and sends Invite to continue.
-6. Priya: workspace, thread with Omar, certification roadmap. End on Impact.
+3. Fares accepts her and approves her pending Reroute milestone 2 with ratings and a review.
+4. Aisha submits milestone 3, Fares gives final approval, the badge unlocks and the evidence appears on her profile. She adds GitHub Foundations with the passing demo ID, and a failing ID falls back to self-reported.
+5. Fares moves her to Trial and sends Invite to continue.
+6. Priya: workspace, thread with Fares, certification roadmap. End on Impact.
 
 "Instrument the Waitlist" and "Fill the Tuesday Night Gap" are created live from scripted briefs and are not seeded.
 

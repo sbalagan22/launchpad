@@ -156,7 +156,7 @@ export function seedThreads(projects: Project[], students: Student[]): Thread[] 
   const out: Thread[] = [
     th("thr_aisha_omar", "stu_aisha", "biz_reroute", "prj_reroute_mvp", [
       ["b", "Welcome aboard, Aisha. Before you start, which transit data feed should we use for the first version?", 600],
-      ["s", "Thanks Omar. I read the docs and the regional agency publishes a public GTFS feed. I would start with that and cache it so the app does not depend on their uptime.", 598],
+      ["s", "Thanks Fares. I read the docs and the regional agency publishes a public GTFS feed. I would start with that and cache it so the app does not depend on their uptime.", 598],
       ["b", "Yes, use the public GTFS feed. Caching is a good call. Mobile-first please, most riders will open it on the platform.", 595],
       ["s", "Understood. I will design for a 375px phone first. Do you want it deployed on Vercel from the start so you can test on real devices?", 592],
       ["b", "Deploy on Vercel from day one. I will add you to the team project.", 590],
@@ -189,7 +189,7 @@ export function seedThreads(projects: Project[], students: Student[]): Thread[] 
       ["b", "Our next board meeting is December 2. The new report would be used for the first time in January.", 49],
     ], 0),
     th("thr_priya_omar", "stu_priya", "biz_reroute", "prj_reroute_disc", [
-      ["s", "Hi Omar, here is my interview plan. Eight interviews across planners, operations leads and a procurement contact.", 160, ["interview-plan-v1.pdf"]],
+      ["s", "Hi Fares, here is my interview plan. Eight interviews across planners, operations leads and a procurement contact.", 160, ["interview-plan-v1.pdf"]],
       ["b", "Great structure. Two thoughts: ask about budget cycles, and ask who signs off on a pilot.", 150],
       ["s", "Added both. Should I also ask about how they handle rider complaints today?", 148],
       ["b", "Yes, that is useful. I can introduce you to two transit contacts. I will send their names.", 140],
@@ -223,7 +223,7 @@ export function seedThreads(projects: Project[], students: Student[]): Thread[] 
     ], 0),
     th("thr_omar_mei", "stu_mei", "biz_reroute", "prj_landingcopy", [
       ["b", "Mei, I want to offer you something. We would like you to continue with Reroute on a four month part-time content role.", 70],
-      ["s", "Thank you, Omar. I would love to hear more about the role and the hours.", 66],
+      ["s", "Thank you, Fares. I would love to hear more about the role and the hours.", 66],
       ["b", "About 8 hours a week, paid, remote with a monthly in-person day in Markham. I sent an Invite to continue with the details.", 60],
       ["s", "Got it. I will read it tonight and reply tomorrow.", 58],
       ["b", "No rush. Take the week if you need it.", 50],
@@ -275,19 +275,19 @@ export function seedNotifications(): Notification[] {
   let n = 0;
   const N = (userId: string, title: string, body: string, href: string, ago: number, read = false): Notification => ({ id: `ntf_${String(++n).padStart(3, "0")}`, userId, title, body, href, read, createdAt: daysFromNow(-ago / 24, 8 + (n % 9), (n * 11) % 60) });
   return [
-    N("stu_aisha", "Omar viewed your milestone 2 submission", "Reroute opened your submission for Ship the First Real Version of Reroute.", "/workspace/prj_reroute_mvp", 6),
+    N("stu_aisha", "Fares viewed your milestone 2 submission", "Reroute opened your submission for Build the First Working Version of the Reroute App.", "/workspace/prj_reroute_mvp", 6),
     N("stu_aisha", "New match: Instrument the Waitlist (88)", "Reroute posted a 14 hour analytics project that fits your skills.", "/projects", 20),
     N("stu_aisha", "Your freeCodeCamp certification is issuer verified", "Responsive Web Design now shows the red check on your profile.", "/certifications", 160, true),
     N("stu_aisha", "Reminder: Reroute milestone 3 opens after approval", "Alerts and deploy unlocks once milestone 2 is approved.", "/workspace/prj_reroute_mvp", 30, true),
     N("stu_aisha", "Jordan Lee sent you a message", "The site's been getting compliments. Can we hire you again in January?", "/messages", 20),
-    N("stu_aisha", "Application received", "Northgate Community Food Bank has your application for Make the Board Read the Dashboard.", "/workspace", 72, true),
-    N("stu_priya", "Omar shared 2 contacts for your interviews", "Reroute added two transit contacts to your thread.", "/messages", 18),
+    N("stu_aisha", "Application received", "Northgate Community Food Bank has your application for Redesign the Monthly Food Bank Report.", "/workspace", 72, true),
+    N("stu_priya", "Fares shared 2 contacts for your interviews", "Reroute added two transit contacts to your thread.", "/messages", 18),
     N("stu_priya", "Harvest Loop viewed your application", "Your application for Pricing and Customer Interviews was opened.", "/workspace", 26),
     N("stu_priya", "Google Data Analytics added to your profile", "Issuer verified with Credly.", "/certifications", 140, true),
     N("stu_priya", "New match: Demo Day pitch assets (76)", "Reroute is looking for pitch help.", "/projects", 55, true),
     N("biz_reroute", "Aisha submitted milestone 2", "Core flow and map view is ready for your review.", "/business/projects/prj_reroute_mvp", 50),
     N("biz_reroute", "Priya posted her interview plan", "Customer Discovery and Pricing has a new file.", "/messages", 150),
-    N("biz_reroute", "3 new applicants for Demo Day assets", "Founder Demo Day Site and Pitch Assets has new applications.", "/business/projects/prj_demoday", 22),
+    N("biz_reroute", "3 new applicants for Demo Day assets", "Build a Demo Day Website and Pitch Slides for Reroute has new applications.", "/business/projects/prj_demoday", 22),
     N("biz_reroute", "Mei Lin viewed your invite", "Your Invite to continue was opened.", "/founder", 18),
     N("biz_reroute", "Daniel Osei sent a pull request", "A fix for the route picker is ready.", "/messages", 280, true),
     N("stu_daniel", "Reroute sent you a message", "Quick follow-up about the iPhone SE layout.", "/messages", 300, true),
@@ -301,7 +301,7 @@ export function seedNotifications(): Notification[] {
     N("stu_noor", "New message from Whitford Cognition Lab", "A question about the consent form rewrite.", "/messages", 60),
     N("stu_sam", "Milestone due in 3 days", "Competitor Research for Community Garden Tools: findings.", "/workspace", 24),
     N("biz_corner", "Fatima submitted a margin model", "Menu Pricing Review has a new submission.", "/business", 40),
-    N("biz_foodbank", "Aisha applied", "New application for Make the Board Read the Dashboard.", "/business", 72),
+    N("biz_foodbank", "Aisha applied", "New application for Redesign the Monthly Food Bank Report.", "/business", 72),
     N("biz_harvest", "Priya applied", "New application for Pricing and Customer Interviews.", "/business", 48),
     N("biz_psylab", "Aisha's charts were reviewed by 3 lab members", "Your review is visible on her profile.", "/business", 700, true),
     N("biz_signalbox", "Theo submitted a storyboard", "Product Explainer Video is ready for review.", "/business", 70),

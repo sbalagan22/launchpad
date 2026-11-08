@@ -25,7 +25,7 @@ for (const reduced of [false, true]) {
     test.use({ reducedMotion: reduced ? "reduce" : "no-preference" });
 
     test("demo script end to end", async ({ page }) => {
-      // 1. Omar posts "Instrument the Waitlist" from a streamed brief.
+      // 1. Fares posts "Instrument the Waitlist" from a streamed brief.
       await login(page, "omar", /\/founder/);
       await page.goto("/business/new");
       await page.getByTestId("raw-input").fill("we want to see where people drop off on our waitlist page");
@@ -50,7 +50,7 @@ for (const reduced of [false, true]) {
       await page.getByTestId("apply-submit").click();
       await expect(page.getByText("You applied")).toBeVisible();
 
-      // 3. Omar accepts her, then approves her pending Reroute MVP milestone 2.
+      // 3. Fares accepts her, then approves her pending Reroute MVP milestone 2.
       await login(page, "omar", /\/founder/);
       await page.goto(projectUrl);
       await page.getByTestId("applicant").filter({ hasText: "Aisha Khan" }).getByTestId("accept-btn").click();
@@ -72,7 +72,7 @@ for (const reduced of [false, true]) {
       await page.goto("/workspace/prj_reroute_mvp");
       await expect(page.getByText("Project complete").first()).toBeVisible();
       await page.goto("/profile");
-      await expect(page.getByTestId("evidence").filter({ hasText: "Ship the First Real Version of Reroute" })).toBeVisible();
+      await expect(page.getByTestId("evidence").filter({ hasText: "Build the First Working Version of the Reroute App" })).toBeVisible();
       await expect(page.getByText("approved by the poster", { exact: false }).first()).toBeVisible();
 
       // Certifications: passing demo ID verifies, failing ID falls back to self-reported.
@@ -95,7 +95,7 @@ for (const reduced of [false, true]) {
       await expect(page.getByTestId("cert-issuer").filter({ hasText: "GitHub Foundations" })).toBeVisible();
       await expect(page.getByTestId("cert-self").filter({ hasText: "Azure" })).toBeVisible();
 
-      // 5. Omar moves Aisha to Trial and sends Invite to continue.
+      // 5. Fares moves Aisha to Trial and sends Invite to continue.
       await login(page, "omar", /\/founder/);
       const cand = page.getByTestId("candidate").filter({ hasText: "Aisha Khan" }).first();
       await cand.getByLabel("Move to stage").selectOption("trial");
@@ -103,12 +103,12 @@ for (const reduced of [false, true]) {
       await page.getByTestId("col-trial").getByTestId("candidate").filter({ hasText: "Aisha Khan" }).getByTestId("invite-btn").click();
       await expect(page.getByText("Invite sent, pending")).toBeVisible();
 
-      // 6. Priya: workspace, thread with Omar, certification roadmap.
+      // 6. Priya: workspace, thread with Fares, certification roadmap.
       await login(page, "priya", /\/dashboard/);
       await page.goto("/workspace");
       await expect(page.getByTestId("ws-detail")).toContainText("Customer Discovery and Pricing");
       await page.goto("/messages");
-      await page.getByTestId("thread-row").filter({ hasText: "Omar Haddad" }).click();
+      await page.getByTestId("thread-row").filter({ hasText: "Fares Tamraz" }).click();
       await expect(page.getByTestId("context-card")).toBeVisible();
       await page.goto("/certifications");
       await expect(page.getByTestId("road-earned")).toContainText("Google Data Analytics");

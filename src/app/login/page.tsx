@@ -11,7 +11,7 @@ import { auth, type DemoRole } from "@/services";
 const ACCOUNTS: { role: DemoRole; icon: typeof Rocket; name: string; who: string; body: string; home: string }[] = [
   { role: "aisha", icon: GraduationCap, name: "Aisha Khan", who: "Student, Computer Science, Lassonde", body: "Second year. Shipping a real app for a startup and applying to her next project.", home: "/dashboard" },
   { role: "priya", icon: LineChart, name: "Priya Nair", who: "Student, Business, Schulich", body: "Third year marketing student doing customer research for an early-stage team.", home: "/dashboard" },
-  { role: "omar", icon: Rocket, name: "Omar Haddad", who: "Founder, Reroute", body: "Runs a YSpace-style startup, posts projects, approves milestones and invites students to continue.", home: "/founder" },
+  { role: "omar", icon: Rocket, name: "Fares Tamraz", who: "Founder, Reroute", body: "Runs a YSpace-style startup, posts projects, approves milestones and invites students to continue.", home: "/founder" },
 ];
 
 // MOCK: there is no authentication. Each card signs in as one of the three seeded demo accounts.

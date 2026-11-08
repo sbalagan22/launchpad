@@ -60,7 +60,7 @@ type B = [id: string, name: string, type: EmployerType, category: string, city: 
 
 export function seedBusinesses(): Business[] {
   const rows: B[] = [
-    ["biz_reroute", "Reroute", "yspace_startup", "Mobility startup", "Markham", 2026, "3 people", 4.5, "Real-time rerouting for transit riders. We tell you the faster way before you are stuck on the platform.", { alumni: true }, 270, "Omar Haddad"],
+    ["biz_reroute", "Reroute", "yspace_startup", "Mobility startup", "Markham", 2026, "3 people", 4.5, "Real-time rerouting for transit riders. We tell you the faster way before you are stuck on the platform.", { alumni: true }, 270, "Fares Tamraz"],
     ["biz_corner", "Corner Press Coffee", "local_business", "Cafe", "Toronto", 2016, "7 staff", 4.8, "Independent coffee shop two blocks from campus with a loyal weekday crowd and very quiet Tuesday nights.", { near: true }, 400, "Dana Kowalski"],
     ["biz_foodbank", "Northgate Community Food Bank", "nonprofit", "Food bank", "Toronto", 2004, "120 volunteers", 4.7, "Community food bank with 120 active volunteers and a board that meets monthly.", { near: true }, 450, "Hannah Boateng"],
     ["biz_lantern", "Paper Lantern Games", "founder", "Indie game studio", "Toronto", 2023, "4 people", 4.8, "Alumni-run indie studio shipping its first narrative puzzle game.", { alumni: true }, 320, "Theo Park"],
@@ -93,7 +93,7 @@ export function seedBusinesses(): Business[] {
 
 /** Contact person shown as the poster's name in messages and reviews. */
 export const CONTACT: Record<string, string> = {
-  biz_reroute: "Omar Haddad", biz_corner: "Dana Kowalski", biz_foodbank: "Hannah Boateng", biz_lantern: "Theo Park", biz_psylab: "Prof. Elaine Whitford", biz_roboclub: "Jordan Lee", biz_casecomp: "Marcus Chen",
+  biz_reroute: "Fares Tamraz", biz_corner: "Dana Kowalski", biz_foodbank: "Hannah Boateng", biz_lantern: "Theo Park", biz_psylab: "Prof. Elaine Whitford", biz_roboclub: "Jordan Lee", biz_casecomp: "Marcus Chen",
   biz_kitchen: "Rosa Delgado", biz_comms: "Priscilla Adeyemi", biz_a11y: "Colin Marsh", biz_fieldnote: "Yusuf Demir", biz_clinic: "Dr. Ananya Rao", biz_garden: "Greta Lindqvist", biz_vizlab: "Prof. David Lin",
   biz_harvest: "Lina Okafor", biz_pulsedesk: "Kareem Haddad", biz_ledgerly: "Mina Choi", biz_tidewell: "Isaac Boateng", biz_fernwood: "Nadia Petrova", biz_plantlane: "Felix Andersson", biz_signalbox: "Aaliyah Brown",
   biz_brightpath: "Sunita Rao", biz_northbeam: "Gabriel Costa", biz_exchange: "Maya Dubois",
@@ -103,7 +103,7 @@ type V = [id: string, biz: string, name: string, pitch: string, sector: Venture[
 
 export function seedVentures(): Venture[] {
   const rows: V[] = [
-    ["ven_reroute", "biz_reroute", "Reroute", "Real-time rerouting for transit riders. We tell you the faster way before you are stuck on the platform.", "mobility", "prototype", 3, ["React", "TypeScript", "Node.js", "PostgreSQL", "Mapbox", "GTFS"], [["Omar Haddad", "CEO", "York alumnus (BSc Computer Science, 2023). Rides transit daily and got tired of finding out about delays too late."], ["Sana Iqbal", "CTO", "York alumna who started as an intern and now runs the backend and data feeds."]], "red", 275, 214],
+    ["ven_reroute", "biz_reroute", "Reroute", "Real-time rerouting for transit riders. We tell you the faster way before you are stuck on the platform.", "mobility", "prototype", 3, ["React", "TypeScript", "Node.js", "PostgreSQL", "Mapbox", "GTFS"], [["Fares Tamraz", "CEO", "York alumnus (BSc Computer Science, 2023). Rides transit daily and got tired of finding out about delays too late."], ["Sana Iqbal", "CTO", "York alumna who started as an intern and now runs the backend and data feeds."]], "red", 275, 214],
     ["ven_harvest", "biz_harvest", "Harvest Loop", "Dynamic pricing and ordering for restaurants that buy produce from small farms.", "agrifood", "prototype", 4, ["Next.js", "Python", "PostgreSQL"], [["Lina Okafor", "CEO", "Grew up around her family's market stall and watched prices change by the hour."], ["Peter Sloan", "CTO", "Backend engineer and weekend farmer."]], "ink", 200],
     ["ven_pulsedesk", "biz_pulsedesk", "PulseDesk", "Appointment reminders that small clinics can set up in an afternoon.", "healthtech", "preseed", 5, ["React", "Node.js", "Twilio"], [["Kareem Haddad", "CEO", "Worked front desk at a family clinic and counted the no-shows."], ["Joy Mbeki", "Head of product", "Designs for the front desk, not the dashboard."]], "tint", 330],
     ["ven_ledgerly", "biz_ledgerly", "Ledgerly", "Invoicing and payment chasing for freelancers.", "fintech", "prototype", 4, ["Vue", "Node.js", "Stripe"], [["Mina Choi", "CEO", "Freelance illustrator turned founder after one too many late invoices."], ["Andre Silva", "CTO", "Payments engineer."]], "gray", 320],
