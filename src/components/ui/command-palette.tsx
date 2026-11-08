@@ -4,7 +4,8 @@ import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react"
 import { useRouter } from "next/navigation";
 import { Award, FileText, Search } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { search, type PaletteResult } from "@/services";
+import { search } from "@/services";
+import type { PaletteResult } from "@/schemas/views";
 import { backdrop, modalPanel } from "@/lib/motion";
 import { cx } from "@/lib/utils";
 
