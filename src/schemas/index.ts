@@ -130,6 +130,18 @@ export type Difficulty = z.infer<typeof Difficulty>;
 export const LocationMode = z.enum(["remote", "hybrid", "on_campus"]);
 export type LocationMode = z.infer<typeof LocationMode>;
 export const LOCATION_LABEL: Record<LocationMode, string> = { remote: "Remote", hybrid: "Hybrid", on_campus: "On campus" };
+export const INDUSTRIES = ["Technology", "Health and science", "Finance and business", "Food and hospitality", "Climate and energy", "Education and community"] as const;
+export type Industry = (typeof INDUSTRIES)[number];
+/** Groups a poster's free-text category into a small, filterable industry list. */
+export function industryOf(category: string): Industry {
+  const c = category.toLowerCase();
+  if (/health|clinic|research|lab/.test(c)) return "Health and science";
+  if (/fintech|finance|business/.test(c)) return "Finance and business";
+  if (/cafe|food|kitchen|garden|agri/.test(c)) return "Food and hospitality";
+  if (/climate|energy/.test(c)) return "Climate and energy";
+  if (/club|department|nonprofit|edtech|working group|language/.test(c)) return "Education and community";
+  return "Technology";
+}
 /** Plain-language acceptance criteria the poster checks and rates on approval. */
 export const Acceptance = z.array(z.string().min(3)).min(3).max(5);
 

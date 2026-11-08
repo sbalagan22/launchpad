@@ -9,7 +9,7 @@ import { ProjectCardView } from "@/components/project-card";
 import { Button, CardSkeletons, Chip, Drawer, EmptyState, ErrorState, Segmented, Select, toast, cx } from "@/components/ui";
 import { useQuery } from "@/hooks/use-query";
 import { projects, type ProjectFilters } from "@/services";
-import { EMPLOYER_LABEL, type Difficulty, type EmployerType, type Faculty, type LocationMode } from "@/schemas";
+import { EMPLOYER_LABEL, INDUSTRIES, LOCATION_LABEL, type Industry, type Difficulty, type EmployerType, type Faculty, type LocationMode } from "@/schemas";
 import { layoutTransition } from "@/lib/motion";
 
 const FACULTIES: Faculty[] = ["Lassonde", "Schulich", "LA&PS", "AMPD", "Science", "Health", "Education", "EUC", "Glendon"];
@@ -43,7 +43,8 @@ function FeedInner() {
     ...(f.payType ?? []).map((v) => ({ key: `pt:${v}`, label: v === "stipend" ? "Stipend" : "Volunteer", remove: () => setF((s) => ({ ...s, payType: s.payType?.filter((x) => x !== v) })) })),
     ...(f.skills ?? []).map((v) => ({ key: `sk:${v}`, label: v, remove: () => setF((s) => ({ ...s, skills: s.skills?.filter((x) => x !== v) })) })),
     ...(f.difficulty ?? []).map((v) => ({ key: `df:${v}`, label: v, remove: () => setF((s) => ({ ...s, difficulty: s.difficulty?.filter((x) => x !== v) })) })),
-    ...(f.locationMode ?? []).map((v) => ({ key: `lm:${v}`, label: v === "on_campus" ? "On campus" : v === "hybrid" ? "Hybrid" : "Remote", remove: () => setF((s) => ({ ...s, locationMode: s.locationMode?.filter((x) => x !== v) })) })),
+    ...(f.locationMode ?? []).map((v) => ({ key: `lm:${v}`, label: LOCATION_LABEL[v], remove: () => setF((s) => ({ ...s, locationMode: s.locationMode?.filter((x) => x !== v) })) })),
+    ...(f.industry ?? []).map((v) => ({ key: `in:${v}`, label: v, remove: () => setF((s) => ({ ...s, industry: s.industry?.filter((x) => x !== v) })) })),
     ...(f.strengthenedBy ?? []).map((v) => ({ key: `ce:${v}`, label: `Strengthened by ${v}`, remove: () => setF((s) => ({ ...s, strengthenedBy: undefined })) })),
     ...(hours ? [{ key: "hours", label: HOURS.find((h) => h.v === hours)!.l, remove: () => setHours("") }] : []),
     ...(deadline ? [{ key: "deadline", label: DEADLINES.find((d) => d.v === deadline)!.l, remove: () => setDeadline("") }] : []),
@@ -72,6 +73,12 @@ function FeedInner() {
               <SlidersHorizontal size={16} aria-hidden />Filters
               {chips.length > 0 && <span className="min-w-5 h-5 px-1 rounded-full bg-brand text-white text-xs font-bold inline-grid place-items-center">{chips.length}</span>}
             </Button>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap mt-3" role="group" aria-label="Quick filters">
+            <span className="text-sm font-semibold text-ink mr-1">Work style</span>
+            {(Object.keys(LOCATION_LABEL) as LocationMode[]).map((v) => <Opt key={v} on={f.locationMode?.includes(v)} onClick={() => { setF((s) => ({ ...s, locationMode: toggle(s.locationMode, v) })); setShown(8); }}>{LOCATION_LABEL[v]}</Opt>)}
+            <span className="text-sm font-semibold text-ink ml-3 mr-1">Industry</span>
+            <div className="w-56"><Select label="Industry" hideLabel value={f.industry?.[0] ?? ""} onChange={(e) => { const v = e.target.value as Industry | ""; setF((s) => ({ ...s, industry: v ? [v] : undefined })); setShown(8); }} options={[{ value: "", label: "All industries" }, ...INDUSTRIES.map((i) => ({ value: i, label: i }))]} /></div>
           </div>
           <LayoutGroup>
             <div className="flex items-center gap-2 flex-wrap mt-3 min-h-8" aria-live="polite">
@@ -114,8 +121,11 @@ function FeedInner() {
           <Group title="Difficulty">
             {(["Beginner", "Intermediate", "Advanced"] as Difficulty[]).map((v) => <Opt key={v} on={f.difficulty?.includes(v)} onClick={() => setF((s) => ({ ...s, difficulty: toggle(s.difficulty, v) }))}>{v}</Opt>)}
           </Group>
-          <Group title="Location">
-            {([["remote", "Remote"], ["hybrid", "Hybrid"], ["on_campus", "On campus"]] as [LocationMode, string][]).map(([v, l]) => <Opt key={v} on={f.locationMode?.includes(v)} onClick={() => setF((s) => ({ ...s, locationMode: toggle(s.locationMode, v) }))}>{l}</Opt>)}
+          <Group title="Industry">
+            {INDUSTRIES.map((v) => <Opt key={v} on={f.industry?.includes(v)} onClick={() => setF((s) => ({ ...s, industry: toggle(s.industry, v) }))}>{v}</Opt>)}
+          </Group>
+          <Group title="Work style">
+            {(Object.entries(LOCATION_LABEL) as [LocationMode, string][]).map(([v, l]) => <Opt key={v} on={f.locationMode?.includes(v)} onClick={() => setF((s) => ({ ...s, locationMode: toggle(s.locationMode, v) }))}>{l}</Opt>)}
           </Group>
           <div className="grid grid-cols-2 gap-3">
             <Select label="Time commitment" value={hours} onChange={(e) => setHours(e.target.value)} options={HOURS.map((h) => ({ value: h.v, label: h.l }))} />

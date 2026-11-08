@@ -1,4 +1,4 @@
-import { Project, PublishInput, VOLUNTEER_ELIGIBLE, type Application, type Notification } from "@/schemas";
+import { Project, PublishInput, VOLUNTEER_ELIGIBLE, industryOf, type Application, type Notification } from "@/schemas";
 import { BusinessStats, ProjectCard, ProjectDetail } from "@/schemas/views";
 import { z } from "zod";
 import { daysFromNow } from "@/lib/dates";
@@ -65,6 +65,7 @@ export const projects: ProjectsApi = {
         .filter((p) => !f.strengthenedBy?.length || f.strengthenedBy.some((c) => p.strengthenedBy.includes(c)))
         .filter((p) => !f.difficulty?.length || f.difficulty.includes(p.difficulty))
         .filter((p) => !f.locationMode?.length || f.locationMode.includes(p.locationMode))
+        .filter((p) => !f.industry?.length || f.industry.includes(industryOf(db.businesses.find((b) => b.id === p.businessId)!.category)))
         .filter((p) => !f.ventureId || p.ventureId === f.ventureId)
         .map((p) => card(db, p, student))
         .filter((c) => !needle || [c.project.title, c.project.hook, c.business.name, c.project.skills.join(" "), c.project.tools.join(" ")].join(" ").toLowerCase().includes(needle));

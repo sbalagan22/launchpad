@@ -3,7 +3,7 @@
  * Every function is async, goes through simulated latency, and returns Zod-validated data.
  * No React in here: plain async functions (and AsyncIterables for streamed results).
  */
-import type { Application, Approval, Business, CatalogEntry, CertClaim, CertStatus, CheckResult, EmployerType, Faculty, Notification, PipelineStage, Project, ProjectType, PublishInput, Review, ScopeResult, Sector, Session, Student, Venture, Difficulty, LocationMode } from "@/schemas";
+import type { Application, Approval, Business, CatalogEntry, CertClaim, CertStatus, CheckResult, EmployerType, Faculty, Notification, PipelineStage, Project, ProjectType, PublishInput, Review, ScopeResult, Sector, Session, Student, Venture, Difficulty, LocationMode, Industry } from "@/schemas";
 import type {
   ApplicationView, ApprovalResult, BusinessStats, CertDetail, ClaimView, EvidenceView, ImpactView, InviteView, Match, PendingApproval, Pathway, PipelineView, ProfileView,
   ProjectCard, ProjectDetail, ThreadDetail, ThreadSummary, VenturePage, WorkspaceSummary, WorkspaceView,
@@ -45,6 +45,7 @@ export type ProjectFilters = {
   status?: Project["status"][];
   difficulty?: Difficulty[];
   locationMode?: LocationMode[];
+  industry?: Industry[];
   /** "match" (default), "newest", "deadline", "pay" */
   sort?: "match" | "newest" | "deadline" | "pay";
 };
