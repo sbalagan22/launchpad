@@ -63,13 +63,23 @@ export const pipeline: PipelineApi = {
       const biz = db.businesses.find((b) => b.id === project.businessId)!;
       const student = db.students.find((x) => x.id === app.studentId)!;
       const now = new Date().toISOString();
-      const invite = { sentAt: now, role: "Part-time role", message: msg || `Thanks for finishing ${project.title}. We would like you to keep working with us.` };
+      const invite = { sentAt: now, role: "Part-time role", message: msg || `Thanks for finishing ${project.title}. We would like you to keep working with us.`, status: "pending" as const };
       const prior = db.pipeline.find((e) => e.applicationId === applicationId);
       const entry: HiringEntry = prior ? { ...prior, stage: "offer", invite, updatedAt: now } : { id: newId("pl"), businessId: biz.id, studentId: student.id, projectId: project.id, applicationId, stage: "offer", invite, updatedAt: now };
       return {
         db: { ...db, pipeline: prior ? db.pipeline.map((e) => (e.id === prior.id ? entry : e)) : [...db.pipeline, entry], notifications: [{ id: newId("ntf"), userId: student.id, title: `${biz.name} invited you to continue`, body: "Open your profile to read the invite.", href: "/profile", read: false, createdAt: now }, ...db.notifications] },
         result: inviteView(db, entry),
       };
+    });
+  },
+
+  async respondToInvite(entryId, response) {
+    return write(InviteView, (db) => {
+      const s = requireStudent(db);
+      const e = db.pipeline.find((x) => x.id === entryId && x.studentId === s.id && x.invite);
+      if (!e || !e.invite) throw new ServiceError("not_found", "Invite not found.");
+      const next: HiringEntry = { ...e, invite: { ...e.invite, status: response }, updatedAt: new Date().toISOString() };
+      return { db: { ...db, pipeline: db.pipeline.map((x) => (x.id === e.id ? next : x)) }, result: inviteView(db, next) };
     });
   },
 

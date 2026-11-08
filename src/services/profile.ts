@@ -11,7 +11,7 @@ function profileOf(db: Db, s: Student) {
   const completed = db.projects.filter((p) => p.studentId === s.id && p.status === "completed").sort((a, b) => b.deadline.localeCompare(a.deadline)).map((p) => ({
     project: p, business: db.businesses.find((b) => b.id === p.businessId)!, venture: db.ventures.find((v) => v.id === p.ventureId) ?? null, review: db.reviews.find((r) => r.projectId === p.id) ?? null,
     badges: db.badges.filter((b) => b.projectId === p.id && b.studentId === s.id),
-    evaluation: db.evaluations.filter((e) => e.projectId === p.id && e.decision === "approved").sort((a, b) => b.at.localeCompare(a.at))[0] ?? null,
+    approval: db.approvals.filter((e) => e.projectId === p.id && e.decision === "approved").sort((a, b) => b.at.localeCompare(a.at))[0] ?? null,
     submissionUrl: db.submissions.find((x) => x.projectId === p.id && x.status === "approved" && x.url)?.url ?? null,
   }));
   const claims = db.certClaims.filter((c) => c.studentId === s.id).map((claim) => ({ claim, entry: db.catalog.find((c) => c.id === claim.certId) ?? null }));
@@ -28,7 +28,7 @@ function profileOf(db: Db, s: Student) {
     roadmap: { earned: claims.filter((c) => c.claim.status === "earned"), in_progress: claims.filter((c) => c.claim.status === "in_progress"), planned: claims.filter((c) => c.claim.status === "planned") },
     badges: db.badges.filter((b) => b.studentId === s.id),
     verifiedHours: completed.reduce((a, c) => a + c.project.hours, 0),
-    active: db.projects.filter((p) => p.studentId === s.id && (p.status === "in_progress" || p.status === "in_review")).length,
+    active: db.projects.filter((p) => p.studentId === s.id && p.status === "in_progress").length,
     applied: db.applications.filter((a) => a.studentId === s.id && a.status === "pending").length,
     strength: Math.round((items.filter((i) => i.done).length / items.length) * 100), strengthItems: items,
     highlyRated: db.reviews.filter((r) => r.studentId === s.id && r.rating >= 4).map((review) => ({ review, business: db.businesses.find((b) => b.id === review.businessId)!, venture: db.ventures.find((v) => v.businessId === review.businessId) ?? null })).filter((x) => x.business.employerType === "yspace_startup" || x.business.employerType === "founder"),
@@ -57,7 +57,7 @@ export const profile: ProfileApi = {
       const s = requireStudent(db);
       return db.badges.filter((b) => b.studentId === s.id).sort((a, b) => b.issuedAt.localeCompare(a.issuedAt)).map((badge) => {
         const project = db.projects.find((p) => p.id === badge.projectId)!;
-        return { badge, project, business: db.businesses.find((x) => x.id === project.businessId)!, evaluation: db.evaluations.filter((e) => e.projectId === project.id && e.decision === "approved")[0] ?? null, review: db.reviews.find((r) => r.projectId === project.id) ?? null };
+        return { badge, project, business: db.businesses.find((x) => x.id === project.businessId)!, approval: db.approvals.filter((e) => e.projectId === project.id && e.decision === "approved")[0] ?? null, review: db.reviews.find((r) => r.projectId === project.id) ?? null };
       });
     });
   },
@@ -70,7 +70,7 @@ export const profile: ProfileApi = {
     return write(Student, (db) => {
       const s = requireStudent(db);
       let skills = s.skills;
-      // Anything the student types is self-reported. Only a reviewer-approved project can make a skill reviewed.
+      // Anything the student types is self-reported. Only a poster-approved project can make a skill reviewed.
       if (p.addSkill && !skills.some((k) => k.name.toLowerCase() === p.addSkill!.name.toLowerCase())) skills = [...skills, { name: p.addSkill.name, level: p.addSkill.level, trust: "self", evidence: [] }];
       if (p.removeSkill) skills = skills.filter((k) => k.name !== p.removeSkill || k.trust !== "self");
       const { addSkill: _a, removeSkill: _r, portfolioUrl, ...rest } = p;

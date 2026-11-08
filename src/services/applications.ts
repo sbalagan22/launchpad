@@ -2,18 +2,17 @@ import { z } from "zod";
 import { Application, type Db, type HiringEntry, type Thread } from "@/schemas";
 import { ApplicationView } from "@/schemas/views";
 import { newId } from "@/lib/ids";
-import { computeMatch } from "@/lib/matching";
-import { draftProposalText } from "@/mocks/proposal";
+import { proposalText as draftProposalText } from "@/mocks/world";
 import { PIPELINE_EMPLOYERS } from "@/mocks/seed";
 import { getDb } from "@/store";
 import type { ApplicationsApi } from "./contract";
 import { ServiceError, latency, parseInput, read, write } from "./core";
-import { me, requireStudent } from "./helpers";
+import { matchOf, me, requireStudent } from "./helpers";
 
 function view(db: Db, a: Application) {
   const project = db.projects.find((p) => p.id === a.projectId)!;
   const student = db.students.find((s) => s.id === a.studentId)!;
-  return { application: a, student, project, business: db.businesses.find((b) => b.id === project.businessId)!, match: computeMatch(student, project, db.certClaims.filter((c) => c.studentId === student.id), db.catalog) };
+  return { application: a, student, project, business: db.businesses.find((b) => b.id === project.businessId)!, match: matchOf(db, student, project) };
 }
 const runsPipeline = (db: Db, businessId: string) => (PIPELINE_EMPLOYERS as readonly string[]).includes(db.businesses.find((b) => b.id === businessId)?.employerType ?? "");
 
@@ -66,7 +65,7 @@ export const applications: ApplicationsApi = {
       }
       if (project.status !== "open") throw new ServiceError("closed", "This project already has a student.");
       const accepted = { ...app, status: "accepted" as const };
-      const thread: Thread = { id: newId("thr"), projectId: project.id, studentId: student.id, businessId: biz.id, messages: [{ id: newId("msg"), from: "business", at: now, text: `Hi ${student.name.split(" ")[0]}, welcome aboard. We are looking forward to working with you on ${project.title}.` }] };
+      const thread: Thread = { id: newId("thr"), projectId: project.id, studentId: student.id, businessId: biz.id, unread: { student: 1, business: 0 }, messages: [{ id: newId("msg"), from: "business", attachments: [], at: now, text: `Hi ${student.name.split(" ")[0]}, welcome aboard. We are looking forward to working with you on ${project.title}.` }] };
       const others = db.applications.filter((a) => a.projectId === project.id && a.id !== app.id && a.status === "pending");
       return {
         db: {
@@ -77,7 +76,6 @@ export const applications: ApplicationsApi = {
           pipeline: db.pipeline.filter((e) => !others.some((o) => o.id === e.applicationId)).map((e) => (e.applicationId === app.id ? { ...e, stage: "interviewing" as const, updatedAt: now } : e)),
           notifications: [
             { id: newId("ntf"), userId: student.id, title: "Proposal accepted", body: `${biz.name} accepted your proposal for ${project.title}. Your workspace is ready.`, href: `/workspace/${project.id}`, read: false, createdAt: now },
-            ...project.reviewerIds.map((rid) => ({ id: newId("ntf"), userId: rid, title: "New project to review", body: `${project.title} lists you as a reviewer.`, href: "/reviewer", read: false, createdAt: now })),
             ...others.map((o) => ({ id: newId("ntf"), userId: o.studentId, title: "Application update", body: `${biz.name} chose another student for ${project.title}.`, href: "/projects", read: false, createdAt: now })),
             ...db.notifications,
           ],

@@ -1,4 +1,4 @@
-import type { CatalogEntry, CertClaim, Project, Student } from "@/schemas";
+import type { CatalogEntry, CertClaim, Project, Review, Student } from "@/schemas";
 import type { Match } from "@/schemas/views";
 import { weeksUntil } from "./dates";
 
@@ -52,6 +52,25 @@ const RELATED: Record<string, string[]> = {
   "Process Mapping": ["Documentation", "Excel"],
   Budgeting: ["Excel"],
   "Market Research": ["Research", "Excel"],
+  Analytics: ["SQL", "JavaScript", "Excel"],
+  "Customer Interviews": ["Interviewing", "Market Research", "Research"],
+  "Qualitative Research": ["Interviewing", "Research", "Writing"],
+  Interviewing: ["Customer Interviews", "Research"],
+  Mapbox: ["JavaScript", "React"],
+  GTFS: ["Python", "SQL"],
+  Testing: ["JavaScript", "Python"],
+  Pricing: ["Excel", "Market Research"],
+  "Financial Modelling": ["Excel"],
+  Statistics: ["Python", "Excel"],
+  "Data Analysis": ["Python", "Excel", "SQL", "Statistics"],
+  "Survey Design": ["Research Methods", "Research"],
+  "Research Methods": ["Research", "Statistics"],
+  "Print Layout": ["Layout Design", "Canva"],
+  "Motion Design": ["Illustration", "Figma"],
+  "Node.js": ["JavaScript"],
+  IndexedDB: ["JavaScript"],
+  Translation: ["French", "Writing"],
+  "Public Speaking": ["Presentation Design"],
 };
 /** Soft skills everyone can bring: partial credit so a first-timer is not locked out. */
 const SOFT = new Set(["Client Communication", "Presenting", "Communicating Findings", "Storytelling", "Outreach", "Technical Writing", "Product Scoping"]);
@@ -61,17 +80,19 @@ export const CERT_BOOST_MAX = 6;
 const BOOST = { issuer: 3, self: 1.5 } as const;
 
 /**
- * Match score from real logic, no randomness: up to 75 points for skills (exact skill = full credit, one or two related
- * skills = 0.85 or 1.0, soft skills = 0.6), up to 25 for availability (hours per week and pay preference), plus a small
- * visible boost for earned certifications the project lists in `strengthenedBy` (issuer verified counts more than self-reported).
+ * Match score from real logic, no randomness. Up to 55 points for skills overlap (exact = full credit, related = 0.85 or 1,
+ * soft = 0.6), 15 for program fit (the project's target faculties), 15 for availability (hours per week and pay preference),
+ * 10 for past review quality (poster ratings), plus a small boost for earned certifications the project lists in
+ * `strengthenedBy` (issuer verified counts more than self-reported). Returns 4 to 5 short reasons.
  */
-export function computeMatch(student: Student, project: Project, claims: CertClaim[], catalog: CatalogEntry[]): Match {
+export function computeMatch(student: Student, project: Project, claims: CertClaim[], catalog: CatalogEntry[], reviews: Review[] = []): Match {
   const byName = new Map(student.skills.map((s) => [s.name.toLowerCase(), s]));
   const matching: string[] = [];
   const related: string[] = [];
   const missing: string[] = [];
   let credit = 0;
-  for (const req of project.skills) {
+  const required = [...project.skills, ...project.tools.filter((t) => byName.has(t.toLowerCase()))];
+  for (const req of required) {
     const exact = byName.get(req.toLowerCase());
     if (exact) {
       matching.push(req);
@@ -87,10 +108,10 @@ export function computeMatch(student: Student, project: Project, claims: CertCla
       credit += 0.6;
     } else missing.push(req);
   }
-  const skillScore = project.skills.length ? credit / project.skills.length : 0;
+  const skillScore = required.length ? Math.min(1, credit / Math.max(1, project.skills.length)) : 0;
 
   const needed = project.hours / weeksUntil(project.deadline);
-  let status: Match["breakdown"]["availability"]["status"] = "good";
+  let status: "good" | "tight" | "mismatch" = "good";
   let avail = 1;
   if (student.hoursPerWeek < needed) {
     status = student.hoursPerWeek >= needed * 0.6 ? "tight" : "mismatch";
@@ -102,7 +123,12 @@ export function computeMatch(student: Student, project: Project, claims: CertCla
     avail *= 0.5;
   }
 
-  const items: Match["breakdown"]["certBoost"]["items"] = [];
+  const programFit = project.faculties.length === 0 || project.faculties.includes(student.faculty) ? 1 : 0.4;
+  const mine = reviews.filter((r) => r.studentId === student.id);
+  const avgRating = mine.length ? mine.reduce((a, r) => a + r.rating, 0) / mine.length : null;
+  const reviewFit = avgRating === null ? 0.6 : Math.max(0.4, Math.min(1, (avgRating - 2) / 3));
+
+  const items: Match["certBoost"]["items"] = [];
   for (const id of project.strengthenedBy) {
     const claim = claims.find((c) => c.studentId === student.id && c.certId === id && c.status === "earned");
     if (!claim) continue;
@@ -111,15 +137,14 @@ export function computeMatch(student: Student, project: Project, claims: CertCla
   }
   const points = Math.min(CERT_BOOST_MAX, items.reduce((a, i) => a + i.points, 0));
 
-  const skillPts = 75 * skillScore;
-  const availPts = 25 * avail;
-  const score = Math.max(5, Math.min(99, Math.round(skillPts + availPts + points)));
-  return {
-    score,
-    breakdown: {
-      skills: { score: Math.round(skillPts), max: 75, matching, related, missing },
-      availability: { score: Math.round(availPts), max: 25, status },
-      certBoost: { points, max: CERT_BOOST_MAX, items },
-    },
-  };
+  const score = Math.max(5, Math.min(99, Math.round(55 * skillScore + 15 * programFit + 15 * avail + 10 * reviewFit + points)));
+
+  const reasons: Match["reasons"] = [];
+  const total = project.skills.length;
+  reasons.push({ key: "skills", tone: matching.length >= Math.ceil(total / 2) ? "good" : matching.length + related.length > 0 ? "ok" : "low", text: matching.length ? `${matching.length} of ${total} skills match${matching.length ? `: ${matching.slice(0, 3).join(", ")}` : ""}` : related.length ? `Related skills: ${related.slice(0, 3).join(", ")}` : "Few listed skills overlap yet" });
+  reasons.push({ key: "program", tone: programFit === 1 ? "good" : "ok", text: programFit === 1 ? `Fits ${student.faculty} students` : `Aimed at other faculties` });
+  reasons.push({ key: "availability", tone: status === "good" ? "good" : status === "tight" ? "ok" : "low", text: status === "good" ? `${student.hoursPerWeek} h/week covers the pace` : status === "tight" ? "Pace is tight for your hours" : "Hours or pay preference do not line up" });
+  reasons.push({ key: "reviews", tone: avgRating === null ? "ok" : avgRating >= 4.5 ? "good" : "ok", text: avgRating === null ? "No past reviews yet" : `Past reviews average ${avgRating.toFixed(1)}` });
+  if (items.length) reasons.push({ key: "cert", tone: "good", text: `${items[0].tier === "issuer" ? "Issuer verified" : "Self-reported"} ${items[0].name.split(" (")[0]}` });
+  return { score, reasons, certBoost: { points, items }, skills: { matching, related, missing } };
 }

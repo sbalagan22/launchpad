@@ -1,9 +1,7 @@
-
 import { ScopeInput, ScopeResult, VOLUNTEER_ELIGIBLE, type Project } from "@/schemas";
-import { computeSkillYield } from "@/lib/skill-yield";
 import { DEMO_SCRIPTS, templateScope } from "@/mocks/demo-scripts";
 import { getDb } from "@/store";
-import type { BriefSection, ProjectDraft, ScopingApi, Tip } from "./contract";
+import type { BriefSection, ProjectDraft, ScopingApi } from "./contract";
 import { ServiceError, latency, parseInput } from "./core";
 import { me } from "./helpers";
 
@@ -23,40 +21,36 @@ async function tryReal(body: unknown): Promise<ScopeResult | null> {
   }
 }
 
-async function resolveBrief(raw: string): Promise<{ brief: ScopeResult; source: "real" | "mock"; reviewerCount: number }> {
+async function resolveBrief(raw: string): Promise<{ brief: ScopeResult; source: "real" | "mock" }> {
   const s = me();
   const input = parseInput(ScopeInput, { brief: raw, businessId: s.role === "business" ? s.userId : "none" });
-  const db = getDb();
-  const biz = db.businesses.find((b) => b.id === input.businessId);
+  const biz = getDb().businesses.find((b) => b.id === input.businessId);
   if (!biz) throw new ServiceError("forbidden", "Sign in as a poster to scope a brief.");
-  const venture = db.ventures.find((v) => v.businessId === biz.id);
   const eligible = VOLUNTEER_ELIGIBLE.includes(biz.employerType);
-  const real = await tryReal({ brief: input.brief, businessName: biz.name, employerType: biz.employerType, ventureBacked: Boolean(venture) });
-  if (real) return { brief: real.payType === "volunteer" && !eligible ? { ...real, payType: "stipend", pay: Math.max(real.pay, 200) } : real, source: "real", reviewerCount: venture ? 2 : 1 };
+  const real = await tryReal({ brief: input.brief, businessName: biz.name, employerType: biz.employerType, isVolunteerEligible: eligible });
+  if (real) return { brief: real.payType === "volunteer" && !eligible ? { ...real, payType: "stipend", pay: Math.max(real.pay, 200) } : real, source: "real" };
   // MOCK: scripted briefs for the two demo listings, keyword-templated scopes for everything else.
-  const script = DEMO_SCRIPTS.find((d) => d.trigger.test(input.brief) && (!d.ventureOnly || venture));
-  const brief = script ? script.brief : templateScope(input.brief, eligible);
-  return { brief: ScopeResult.parse(brief), source: "mock", reviewerCount: venture ? 2 : 1 };
+  const script = DEMO_SCRIPTS.find((d) => d.trigger.test(input.brief));
+  return { brief: ScopeResult.parse(script ? script.brief : templateScope(input.brief, eligible)), source: "mock" };
 }
 
-const FACTOR_OF: [RegExp, Tip["factor"]][] = [
-  [/tools|learn/i, "learning"], [/deliverable/i, "deliverable"], [/reviewer/i, "reviewer"], [/done looks|output|portfolio|show/i, "portfolio"], [/milestone|hours/i, "scope"], [/repetitive/i, "learning"],
-];
-const toTips = (tips: string[]): Tip[] => tips.map((text, i) => ({ id: `tip_${i}`, text, factor: FACTOR_OF.find(([re]) => re.test(text))?.[1] ?? "general" }));
-
-const draftYield = (p: ProjectDraft | Project) => {
-  const reviewerCount = "reviewerIds" in p && p.reviewerIds ? p.reviewerIds.length : 1;
-  return computeSkillYield({
-    title: p.title, description: p.description, hook: p.hook, type: p.type, deliverables: p.deliverables, skills: p.skills, tools: p.tools, hours: p.hours,
-    milestones: p.milestones.map((m) => ({ hours: m.hours })), reviewerCount, rubricCount: p.rubric.length, doneLooksLike: p.doneLooksLike,
-  });
-};
+export function improvementsFor(p: ProjectDraft | Project): string[] {
+  const out: string[] = [];
+  if (p.deliverables.length < 2) out.push("List at least two concrete deliverables so the student knows what finished means.");
+  if (p.milestones.length < 3) out.push("Three milestones make progress easier to check than two.");
+  if ((p.acceptance ?? []).length < 3) out.push("Add acceptance criteria you can check with a yes or no.");
+  if (!p.tools || p.tools.length === 0) out.push("Name the tools the student will use so applicants can judge fit.");
+  if (!("goodFit" in p) || !p.goodFit) out.push("Say who the project is a good fit for, and who it is not.");
+  if (p.hours > 20) out.push("Projects over 20 hours get fewer applicants. Consider splitting the work.");
+  if (p.payType === "stipend" && p.hours > 0 && p.pay / p.hours < 18) out.push("Pay under about $18 an hour is below what most similar listings offer.");
+  return out.slice(0, 4);
+}
 
 export const scoping: ScopingApi = {
   async *scopeBrief(rawText): AsyncGenerator<BriefSection> {
     const first = resolveBrief(rawText);
     await latency(500, 800);
-    const { brief, source, reviewerCount } = await first;
+    const { brief, source } = await first;
     yield { section: "thinking", source };
     const wait = () => latency(250, 450);
     await wait(); yield { section: "title", value: brief.title };
@@ -65,22 +59,14 @@ export const scoping: ScopingApi = {
     await wait(); yield { section: "milestones", value: brief.milestones };
     await wait(); yield { section: "skills", value: { skills: brief.skills, tools: brief.tools, strengthenedBy: brief.strengthenedBy } };
     await wait(); yield { section: "hours_pay", value: { hours: brief.hours, payType: brief.payType, pay: brief.pay, payMin: brief.payMin, payMax: brief.payMax, sponsorStipend: brief.sponsorStipend } };
-    await wait(); yield { section: "rubric", value: brief.rubric };
-    await wait(); yield { section: "fit", value: { doneLooksLike: brief.doneLooksLike, goodFit: brief.goodFit, notAFit: brief.notAFit, beginnerFriendly: brief.beginnerFriendly } };
+    await wait(); yield { section: "acceptance", value: brief.acceptance };
+    await wait(); yield { section: "fit", value: { doneLooksLike: brief.doneLooksLike, goodFit: brief.goodFit, notAFit: brief.notAFit, difficulty: brief.difficulty, locationMode: brief.locationMode } };
     await wait();
-    yield { section: "yield", value: computeSkillYield({ title: brief.title, description: brief.summary, hook: brief.hook, type: brief.type, deliverables: brief.deliverables, skills: brief.skills, tools: brief.tools, hours: brief.hours, milestones: brief.milestones, reviewerCount, rubricCount: brief.rubric.length, doneLooksLike: brief.doneLooksLike }) };
     yield { section: "complete", value: brief, source };
   },
 
-  async improveYield(project) {
+  async suggestImprovements(project) {
     await latency(300, 600);
-    const result = draftYield(project);
-    return { result, tips: toTips(result.tips) };
-  },
-
-  async scoreDraft(project) {
-    await latency(100, 250);
-    return draftYield(project);
+    return improvementsFor(project);
   },
 };
-

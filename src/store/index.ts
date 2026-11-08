@@ -6,10 +6,9 @@ import { Db, Session } from "@/schemas";
 import { buildSeed } from "@/mocks/seed";
 
 export const DEMO_STUDENT_ID = "stu_aisha";
-export const DEMO_BUSINESS_ID = "biz_corner";
-export const DEMO_FOUNDER_ID = "biz_reroute";
-export const DEMO_REVIEWER_ID = "rev_noor";
-const STORAGE_KEY = "launchpad-demo-v1";
+export const DEMO_PRIYA_ID = "stu_priya";
+export const DEMO_OMAR_ID = "biz_reroute";
+const STORAGE_KEY = "launchpad-demo-v2";
 
 type AppState = {
   db: Db;
@@ -43,7 +42,7 @@ export const useApp = create<AppState>()(
     }),
     {
       name: STORAGE_KEY,
-      version: 1,
+      version: 2,
       storage: createJSONStorage(() => localStorage),
       skipHydration: true,
       partialize: (s) => ({ db: s.db, session: s.session, signedIn: s.signedIn }),

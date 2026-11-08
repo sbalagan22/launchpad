@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { Faculty, Session, type Student } from "@/schemas";
-import { useApp, getDb, DEMO_BUSINESS_ID, DEMO_FOUNDER_ID, DEMO_REVIEWER_ID, DEMO_STUDENT_ID } from "@/store";
+import { useApp, getDb, DEMO_OMAR_ID, DEMO_PRIYA_ID, DEMO_STUDENT_ID } from "@/store";
 import { slugify } from "@/lib/ids";
+import { CONTACT } from "@/mocks/people";
 import { daysFromNow } from "@/lib/dates";
 import { newId } from "@/lib/ids";
 import type { AuthApi, CurrentUser, DemoRole, SignUpStudentInput, YorkEmailCheck } from "./contract";
@@ -24,17 +25,15 @@ function build(): CurrentUser {
   const db = getDb();
   const student = session.role === "student" ? db.students.find((s) => s.id === session.userId) ?? null : null;
   const business = session.role === "business" ? db.businesses.find((b) => b.id === session.userId) ?? null : null;
-  const reviewer = session.role === "reviewer" ? db.reviewers.find((r) => r.id === session.userId) ?? null : null;
-  const displayName = student?.name ?? business?.name ?? reviewer?.name ?? "Guest";
+  const displayName = student?.name ?? (business ? (CONTACT[business.id] ?? business.name) : "Guest");
   const initials = displayName.split(/\s+/).filter((w) => /^[A-Za-z]/.test(w)).slice(0, 2).map((w) => w[0].toUpperCase()).join("");
-  return { session, student, business, reviewer, displayName, initials };
+  return { session, student, business, displayName, initials };
 }
 
 const DEMO: Record<DemoRole, Session> = {
-  student: { role: "student", userId: DEMO_STUDENT_ID },
-  poster: { role: "business", userId: DEMO_BUSINESS_ID },
-  founder: { role: "business", userId: DEMO_FOUNDER_ID },
-  reviewer: { role: "reviewer", userId: DEMO_REVIEWER_ID },
+  aisha: { role: "student", userId: DEMO_STUDENT_ID },
+  priya: { role: "student", userId: DEMO_PRIYA_ID },
+  omar: { role: "business", userId: DEMO_OMAR_ID },
 };
 
 export const auth: AuthApi = {
@@ -76,7 +75,7 @@ export const auth: AuthApi = {
   async switchTo(role, userId) {
     await latency(150, 300);
     const db = getDb();
-    const ok = role === "student" ? db.students.some((x) => x.id === userId) : role === "business" ? db.businesses.some((x) => x.id === userId) : db.reviewers.some((x) => x.id === userId);
+    const ok = role === "student" ? db.students.some((x) => x.id === userId) : db.businesses.some((x) => x.id === userId);
     if (!ok) throw new ServiceError("not_found", "That demo user does not exist.");
     useApp.getState().setSession({ role, userId });
     return build();
@@ -87,7 +86,6 @@ export const auth: AuthApi = {
     return {
       students: db.students.map((s) => ({ id: s.id, name: s.name, sub: `${s.program}, ${s.faculty}, year ${s.year}` })),
       businesses: db.businesses.map((b) => ({ id: b.id, name: b.name, sub: b.category })),
-      reviewers: db.reviewers.map((r) => ({ id: r.id, name: r.name, sub: `${r.title}, ${r.org}` })),
     };
   },
 };

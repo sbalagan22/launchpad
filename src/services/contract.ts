@@ -3,16 +3,16 @@
  * Every function is async, goes through simulated latency, and returns Zod-validated data.
  * No React in here: plain async functions (and AsyncIterables for streamed results).
  */
-import type { CatalogEntry, CertClaim, CertStatus, CheckResult, Evaluation, Faculty, EmployerType, Notification, PipelineStage, Project, ProjectType, PublishInput, Review, ScopeResult, Student, Business, Reviewer, Sector, Session, Venture, Application } from "@/schemas";
+import type { Application, Approval, Business, CatalogEntry, CertClaim, CertStatus, CheckResult, EmployerType, Faculty, Notification, PipelineStage, Project, ProjectType, PublishInput, Review, ScopeResult, Sector, Session, Student, Venture, Difficulty, LocationMode } from "@/schemas";
 import type {
-  ApplicationView, CertDetail, ClaimView, EvidenceView, FinalApproval, ImpactView, InviteView, Match, MilestoneDecision, PaletteResult, Pathway, PipelineView, ProfileView,
-  ProjectCard, ProjectDetail, QueueItem, SubmissionDetail, VenturePage, WorkspaceView,
+  ApplicationView, ApprovalResult, BusinessStats, CertDetail, ClaimView, EvidenceView, ImpactView, InviteView, Match, PendingApproval, Pathway, PipelineView, ProfileView,
+  ProjectCard, ProjectDetail, ThreadDetail, ThreadSummary, VenturePage, WorkspaceSummary, WorkspaceView,
 } from "@/schemas/views";
-import type { YieldResult } from "@/lib/skill-yield";
 
-export type DemoRole = "student" | "poster" | "reviewer" | "founder";
+/** The three demo accounts. */
+export type DemoRole = "aisha" | "priya" | "omar";
 
-export type CurrentUser = { session: Session; student: Student | null; business: Business | null; reviewer: Reviewer | null; displayName: string; initials: string };
+export type CurrentUser = { session: Session; student: Student | null; business: Business | null; displayName: string; initials: string };
 
 export type YorkEmailCheck = { valid: boolean; reason?: string };
 export type SignUpStudentInput = { name: string; email: string; program: string; faculty: Faculty; year: number; campus: "Keele" | "Glendon"; skills: string[]; hoursPerWeek: number; pref: "paid" | "volunteer" | "both" };
@@ -25,7 +25,7 @@ export interface AuthApi {
   logout(): Promise<void>;
   /** Dev menu: switch to any seeded user. */
   switchTo(role: Session["role"], userId: string): Promise<CurrentUser>;
-  listDemoUsers(): Promise<{ students: { id: string; name: string; sub: string }[]; businesses: { id: string; name: string; sub: string }[]; reviewers: { id: string; name: string; sub: string }[] }>;
+  listDemoUsers(): Promise<{ students: { id: string; name: string; sub: string }[]; businesses: { id: string; name: string; sub: string }[] }>;
 }
 
 export type ProjectFilters = {
@@ -41,8 +41,10 @@ export type ProjectFilters = {
   q?: string;
   ventureId?: string;
   status?: Project["status"][];
-  /** "match" (default), "newest", "deadline", "yield" */
-  sort?: "match" | "newest" | "deadline" | "yield";
+  difficulty?: Difficulty[];
+  locationMode?: LocationMode[];
+  /** "match" (default), "newest", "deadline", "pay" */
+  sort?: "match" | "newest" | "deadline" | "pay";
 };
 export type ProjectDraft = PublishInput;
 export type ProjectList = { items: ProjectCard[]; total: number };
@@ -52,10 +54,13 @@ export interface ProjectsApi {
   get(id: string): Promise<ProjectDetail>;
   /** Creates a draft (not visible in the feed). */
   create(draft: ProjectDraft): Promise<Project>;
-  /** Publishes a draft. Rejects with a ServiceError("low_yield") and tips when skill yield is under 60. */
+  /** Lists missing items (in plain words) before a draft can be published. No scores. */
+  checkPublish(draft: ProjectDraft | Project): Promise<{ ok: boolean; missing: string[] }>;
+  /** Publishes a draft. Rejects with ServiceError("not_ready", ..., { missing }) when items are missing. */
   publish(id: string): Promise<Project>;
   /** Posts that belong to the current business account (all statuses). */
   listMine(): Promise<ProjectCard[]>;
+  businessStats(): Promise<BusinessStats>;
   save(id: string): Promise<void>;
   unsave(id: string): Promise<void>;
   listSaved(): Promise<ProjectCard[]>;
@@ -69,19 +74,15 @@ export type BriefSection =
   | { section: "milestones"; value: { title: string; hours: number; dueInDays: number }[] }
   | { section: "skills"; value: { skills: string[]; tools: string[]; strengthenedBy: string[] } }
   | { section: "hours_pay"; value: { hours: number; payType: "stipend" | "volunteer"; pay: number; payMin: number; payMax: number; sponsorStipend: number } }
-  | { section: "rubric"; value: ScopeResult["rubric"] }
-  | { section: "fit"; value: { doneLooksLike: string; goodFit: string; notAFit: string; beginnerFriendly: ScopeResult["beginnerFriendly"] } }
-  | { section: "yield"; value: YieldResult }
+  | { section: "acceptance"; value: string[] }
+  | { section: "fit"; value: { doneLooksLike: string; goodFit: string; notAFit: string; difficulty: Difficulty; locationMode: LocationMode } }
   | { section: "complete"; value: ScopeResult; source: "real" | "mock" };
-
-export type Tip = { id: string; text: string; factor: "learning" | "deliverable" | "reviewer" | "portfolio" | "scope" | "general" };
 
 export interface ScopingApi {
   /** Poster side only. Turns a messy ask into a structured brief. Never produces student work. */
   scopeBrief(rawText: string): AsyncIterable<BriefSection>;
-  improveYield(project: ProjectDraft | Project): Promise<{ result: YieldResult; tips: Tip[] }>;
-  /** Pure helper for live recomputation while a poster edits a brief. */
-  scoreDraft(project: ProjectDraft | Project): Promise<YieldResult>;
+  /** Plain-language suggestions for improving a brief. No scores. */
+  suggestImprovements(project: ProjectDraft | Project): Promise<string[]>;
 }
 
 export interface ApplicationsApi {
@@ -94,25 +95,31 @@ export interface ApplicationsApi {
 }
 
 export interface WorkspaceApi {
+  listMine(): Promise<WorkspaceSummary[]>;
   getWorkspace(projectId: string): Promise<WorkspaceView>;
   /** Submits links (and optional file names) for the milestone. Runs the Basic check on the first link. */
-  submitMilestone(milestoneId: string, links: string[], opts?: { fileNames?: string[]; final?: boolean }): Promise<{ submission: WorkspaceView["submissions"][number]["submission"]; check: CheckResult | null }>;
+  submitMilestone(milestoneId: string, links: string[], opts?: { fileNames?: string[]; note?: string }): Promise<{ submission: WorkspaceView["submissions"][number]["submission"]; check: CheckResult | null }>;
   /** Reachability only. Labelled "Basic check" in the UI. Not a score of quality. */
   basicCheck(url: string): Promise<CheckResult>;
-  sendMessage(projectId: string, text: string): Promise<void>;
-  listThreads(): Promise<import("@/schemas/views").ThreadView[]>;
-  /** Poster leaves a rating and comment on a completed project. */
-  rateStudent(projectId: string, rating: number, text: string): Promise<Review>;
 }
 
-export interface ReviewApi {
-  queue(): Promise<QueueItem[]>;
-  getSubmission(id: string): Promise<SubmissionDetail>;
-  /** Saves per-criterion scores (1 to 4) and written feedback. Required before deciding. */
-  scoreRubric(submissionId: string, scores: { criterion: string; score: number }[], feedback: string): Promise<Evaluation>;
-  decideMilestone(submissionId: string, decision: "approve" | "changes"): Promise<MilestoneDecision>;
-  /** After every milestone is approved: completes the project and unlocks verified evidence and badges. */
-  finalApprove(projectId: string): Promise<FinalApproval>;
+export interface ApprovalsApi {
+  /** Submissions waiting on the signed-in poster. */
+  pending(): Promise<PendingApproval[]>;
+  getSubmission(submissionId: string): Promise<PendingApproval>;
+  /** Poster approves with a rating per acceptance criterion and a short review. Approving the last milestone completes the project, issues badges and unlocks evidence. */
+  approve(submissionId: string, ratings: { criterion: string; rating: number }[], review: string): Promise<ApprovalResult>;
+  requestChanges(submissionId: string, ratings: { criterion: string; rating: number }[], review: string): Promise<ApprovalResult>;
+}
+
+export interface MessagesApi {
+  threads(): Promise<ThreadSummary[]>;
+  /** Opening a thread marks it read for the signed-in user. */
+  thread(threadId: string): Promise<ThreadDetail>;
+  send(threadId: string, text: string, attachments?: string[]): Promise<ThreadDetail>;
+  /** Finds or creates a thread with the other party (optionally about a project). */
+  start(otherId: string, projectId?: string): Promise<ThreadDetail>;
+  unreadCount(): Promise<number>;
 }
 
 export type CertFilters = { category?: CatalogEntry["category"]; q?: string; maxCostUsd?: number };
@@ -147,6 +154,7 @@ export interface PipelineApi {
   /** Only after the student's project for this application has been finally approved. */
   inviteToContinue(applicationId: string, message?: string): Promise<InviteView>;
   myInvites(): Promise<InviteView[]>;
+  respondToInvite(entryId: string, response: "accepted" | "declined"): Promise<InviteView>;
 }
 
 export interface ProfileApi {
@@ -162,10 +170,6 @@ export interface ImpactApi {
 
 export interface MatchingApi {
   matchFor(studentId: string, projectId: string): Promise<Match>;
-}
-
-export interface SearchApi {
-  palette(query: string): Promise<PaletteResult>;
 }
 
 export interface NotificationsApi {

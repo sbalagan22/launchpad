@@ -1,6 +1,5 @@
 import type { CheckResult, Db } from "@/schemas";
 import { hashString, newId } from "@/lib/ids";
-import { MOCK_CHECKS } from "@/mocks/checks";
 import { ServiceError } from "./core";
 
 export function normalizeUrl(raw: string): string {
@@ -23,7 +22,7 @@ export function normalizeUrl(raw: string): string {
 export function basicCheckFor(db: Db, rawUrl: string): CheckResult {
   const url = normalizeUrl(rawUrl);
   const stamp = { id: newId("chk"), checkedAt: new Date().toISOString() };
-  const known = db.checks.find((c) => normalizeUrl(c.url) === url) ?? MOCK_CHECKS[url];
+  const known = db.checks.find((c) => normalizeUrl(c.url) === url);
   if (known) return { ...known, ...stamp };
   const host = new URL(url).hostname;
   if (host.endsWith(".invalid") || host === "localhost" || /(^|[.-])(broken|404|down)([.-]|$)/.test(host)) {

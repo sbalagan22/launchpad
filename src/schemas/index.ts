@@ -6,10 +6,10 @@ export const Id = z.string().min(1);
 export const IsoDate = z.string().min(10);
 
 /* ---------- Trust ---------- */
-// Skills: backed by a reviewer-approved project, or typed in by the student.
+// Skills: backed by a poster-approved project, or typed in by the student.
 export const SkillTrust = z.enum(["reviewed", "self"]);
 export type SkillTrust = z.infer<typeof SkillTrust>;
-export const SKILL_TRUST_LABEL: Record<SkillTrust, string> = { reviewed: "Reviewer approved", self: "Self-reported" };
+export const SKILL_TRUST_LABEL: Record<SkillTrust, string> = { reviewed: "Approved by poster", self: "Self-reported" };
 
 // Certifications: exactly two tiers. Launchpad never issues, grades or tests them.
 export const CertTier = z.enum(["issuer", "self"]);
@@ -99,11 +99,7 @@ export const Business = z.object({
 });
 export type Business = z.infer<typeof Business>;
 
-export const ReviewerTitle = z.enum(["Professor", "TA", "Alum", "Senior student", "YSpace mentor"]);
-export const Reviewer = z.object({ id: Id, name: z.string(), title: ReviewerTitle, org: z.string(), expertise: z.array(ProjectType), bio: z.string() });
-export type Reviewer = z.infer<typeof Reviewer>;
-
-export const Sector = z.enum(["mobility", "healthtech", "agrifood", "fintech", "ai_tools", "climate"]);
+export const Sector = z.enum(["mobility", "healthtech", "agrifood", "fintech", "ai_tools", "climate", "edtech"]);
 export type Sector = z.infer<typeof Sector>;
 export const VentureStage = z.enum(["idea", "prototype", "preseed", "seed"]);
 export const Venture = z.object({
@@ -115,14 +111,22 @@ export const Venture = z.object({
   stage: VentureStage,
   teamSize: z.number().int().min(1),
   stack: z.array(z.string()),
-  founders: z.array(z.object({ name: z.string(), role: z.string() })),
+  founders: z.array(z.object({ name: z.string(), role: z.string(), bio: z.string().default("") })),
   yspaceVerified: z.boolean(),
+  location: z.string().default("Markham"),
+  foundedAt: IsoDate.default("2026-01-01"),
+  waitlist: z.number().int().optional(),
   logoTone: z.enum(["red", "ink", "gray", "tint"]),
 });
 export type Venture = z.infer<typeof Venture>;
 
-export const RubricCriterion = z.object({ criterion: z.string().min(1), description: z.string().min(1) });
-export type RubricCriterion = z.infer<typeof RubricCriterion>;
+export const Difficulty = z.enum(["Beginner", "Intermediate", "Advanced"]);
+export type Difficulty = z.infer<typeof Difficulty>;
+export const LocationMode = z.enum(["remote", "hybrid", "on_campus"]);
+export type LocationMode = z.infer<typeof LocationMode>;
+export const LOCATION_LABEL: Record<LocationMode, string> = { remote: "Remote", hybrid: "Hybrid", on_campus: "On campus" };
+/** Plain-language acceptance criteria the poster checks and rates on approval. */
+export const Acceptance = z.array(z.string().min(3)).min(3).max(5);
 
 export const Milestone = z.object({
   id: Id,
@@ -144,11 +148,11 @@ export const Project = z.object({
   type: ProjectType,
   status: ProjectStatus,
   description: z.string(),
-  deliverables: z.array(z.string()).min(1),
-  milestones: z.array(Milestone).min(2).max(4),
-  skills: z.array(z.string()).min(1),
+  deliverables: z.array(z.string()),
+  milestones: z.array(Milestone).max(4),
+  skills: z.array(z.string()),
   tools: z.array(z.string()),
-  hours: z.number().int().min(1).max(25),
+  hours: z.number().int().min(0).max(25),
   /** Equity-only work is not allowed: there is no "equity" pay type. */
   payType: z.enum(["stipend", "volunteer"]),
   pay: z.number().min(0),
@@ -157,8 +161,9 @@ export const Project = z.object({
   deadline: IsoDate,
   createdAt: IsoDate,
   studentId: Id.nullable(),
-  reviewerIds: z.array(Id).min(1),
-  rubric: z.array(RubricCriterion).min(3).max(5),
+  acceptance: z.array(z.string()).max(5),
+  difficulty: Difficulty,
+  locationMode: LocationMode,
   doneLooksLike: z.string(),
   goodFit: z.string(),
   notAFit: z.string(),
@@ -182,10 +187,10 @@ export const Application = z.object({
 });
 export type Application = z.infer<typeof Application>;
 
-export const Message = z.object({ id: Id, from: z.enum(["student", "business"]), text: z.string().min(1), at: IsoDate });
+export const Message = z.object({ id: Id, from: z.enum(["student", "business"]), text: z.string().min(1), at: IsoDate, attachments: z.array(z.string()).default([]) });
 export type Message = z.infer<typeof Message>;
 
-export const Thread = z.object({ id: Id, projectId: Id, studentId: Id, businessId: Id, messages: z.array(Message).min(1) });
+export const Thread = z.object({ id: Id, projectId: Id.optional(), studentId: Id, businessId: Id, messages: z.array(Message).min(1), unread: z.object({ student: z.number().int().min(0), business: z.number().int().min(0) }).default({ student: 0, business: 0 }) });
 export type Thread = z.infer<typeof Thread>;
 
 export const Review = z.object({
@@ -193,7 +198,8 @@ export const Review = z.object({
   projectId: Id,
   studentId: Id,
   businessId: Id,
-  rating: z.number().int().min(1).max(5),
+  rating: z.number().min(1).max(5),
+  ratings: z.array(z.object({ criterion: z.string(), rating: z.number().int().min(1).max(5) })).default([]),
   text: z.string(),
   by: z.string(),
   createdAt: IsoDate,
@@ -253,6 +259,8 @@ export const CertClaim = z
     expiresAt: IsoDate.optional(),
     issuerUrl: z.string().optional(),
     fileName: z.string().optional(),
+    note: z.string().optional(),
+    targetDate: IsoDate.optional(),
     createdAt: IsoDate,
   })
   // Issuer verification only ever produces an earned claim with dates. A file upload never changes the tier.
@@ -288,17 +296,18 @@ export const Submission = z.object({
 });
 export type Submission = z.infer<typeof Submission>;
 
-export const Evaluation = z.object({
+/** The poster rates each acceptance criterion and writes a short review when approving or requesting changes. */
+export const Approval = z.object({
   id: Id,
   submissionId: Id,
   projectId: Id,
-  reviewerId: Id,
-  scores: z.array(z.object({ criterion: z.string(), score: z.number().int().min(1).max(4) })).min(3),
-  feedback: z.string().min(1),
+  businessId: Id,
+  ratings: z.array(z.object({ criterion: z.string(), rating: z.number().int().min(1).max(5) })).min(3),
+  review: z.string().min(1),
   decision: z.enum(["approved", "changes_requested"]),
   at: IsoDate,
 });
-export type Evaluation = z.infer<typeof Evaluation>;
+export type Approval = z.infer<typeof Approval>;
 
 export const Badge = z.object({
   id: Id,
@@ -320,7 +329,7 @@ export const HiringEntry = z.object({
   projectId: Id,
   applicationId: Id.optional(),
   stage: PipelineStage,
-  invite: z.object({ sentAt: IsoDate, role: z.string(), message: z.string() }).optional(),
+  invite: z.object({ sentAt: IsoDate, role: z.string(), message: z.string(), status: z.enum(["pending", "accepted", "declined"]).default("pending") }).optional(),
   updatedAt: IsoDate,
 });
 export type HiringEntry = z.infer<typeof HiringEntry>;
@@ -330,7 +339,6 @@ export const SavedProject = z.object({ studentId: Id, projectId: Id });
 export const Db = z.object({
   students: z.array(Student),
   businesses: z.array(Business),
-  reviewers: z.array(Reviewer),
   ventures: z.array(Venture),
   projects: z.array(Project),
   applications: z.array(Application),
@@ -340,7 +348,7 @@ export const Db = z.object({
   catalog: z.array(CatalogEntry),
   certClaims: z.array(CertClaim),
   submissions: z.array(Submission),
-  evaluations: z.array(Evaluation),
+  approvals: z.array(Approval),
   checks: z.array(CheckResult),
   badges: z.array(Badge),
   pipeline: z.array(HiringEntry),
@@ -369,7 +377,9 @@ export const ScopeResult = z.object({
   payMin: z.number().min(0),
   payMax: z.number().min(0),
   pay: z.number().min(0),
-  rubric: z.array(RubricCriterion).min(3).max(5),
+  acceptance: Acceptance,
+  difficulty: Difficulty.default("Intermediate"),
+  locationMode: LocationMode.default("remote"),
   doneLooksLike: z.string(),
   goodFit: z.string(),
   notAFit: z.string(),
@@ -382,27 +392,28 @@ export type ScopeResult = z.infer<typeof ScopeResult>;
 
 export const PublishInput = z.object({
   businessId: Id,
-  title: z.string().trim().min(3),
+  title: z.string().trim().min(3, "Add a title"),
   hook: z.string().default(""),
   type: ProjectType,
   description: z.string(),
-  deliverables: z.array(z.string().trim().min(1)).min(1),
-  milestones: z.array(z.object({ title: z.string().trim().min(1), hours: z.number().min(0), dueInDays: z.number().int().min(1) })).min(2).max(4),
-  skills: z.array(z.string()).min(1),
+  deliverables: z.array(z.string().trim().min(1)).default([]),
+  milestones: z.array(z.object({ title: z.string().trim().min(1), hours: z.number().min(0), dueInDays: z.number().int().min(1) })).max(4).default([]),
+  skills: z.array(z.string()).default([]),
   tools: z.array(z.string()).default([]),
-  hours: z.number().int().min(1).max(25),
+  hours: z.number().int().min(0).max(25, "Projects are capped at 25 hours"),
   payType: z.enum(["stipend", "volunteer"]),
-  pay: z.number().min(0),
+  pay: z.number().min(0).default(0),
   sponsorStipend: z.number().min(0).default(0),
-  rubric: z.array(RubricCriterion).min(3).max(5),
+  acceptance: z.array(z.string().trim().min(1)).max(5).default([]),
+  difficulty: Difficulty.default("Intermediate"),
+  locationMode: LocationMode.default("remote"),
   doneLooksLike: z.string().default(""),
   goodFit: z.string().default(""),
   notAFit: z.string().default(""),
   strengthenedBy: z.array(z.string()).default([]),
-  badgeSkills: z.array(z.string()),
-  beginnerFriendly: z.boolean(),
+  badgeSkills: z.array(z.string()).default([]),
+  beginnerFriendly: z.boolean().default(false),
   ventureId: Id.optional(),
-  reviewerIds: z.array(Id).optional(),
 });
 export type PublishInput = z.infer<typeof PublishInput>;
 
@@ -417,7 +428,7 @@ export const SubmitInput = z
   .refine((v) => (v.url && v.url.length > 0) || v.fileNames.length > 0, { message: "Add a link or at least one file." });
 export type SubmitInput = z.infer<typeof SubmitInput>;
 
-export const Role = z.enum(["student", "business", "reviewer"]);
+export const Role = z.enum(["student", "business"]);
 export type Role = z.infer<typeof Role>;
 export const Session = z.object({ role: Role, userId: Id });
 export type Session = z.infer<typeof Session>;
