@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { Check, Lock, MessageSquare } from "lucide-react";
 import { PageContainer } from "@/components/nav";
@@ -63,14 +63,15 @@ export function WorkspaceDetail({ projectId, poster = false }: { projectId: stri
 function Detail({ w, poster, pending }: { w: WorkspaceView; poster: boolean; pending: Awaited<ReturnType<typeof approvals.pending>> }) {
   const p = w.project;
   const done = p.milestones.filter((m) => m.status === "approved").length;
-  const [unlock, setUnlock] = useState(false);
-  useEffect(() => {
-    if (poster || p.status !== "completed" || !w.badges.length) return;
+  const [unlock, setUnlock] = useState(() => {
+    if (poster || p.status !== "completed" || !w.badges.length) return false;
     try {
       const key = `lp-badge-seen:${p.id}`;
-      if (!localStorage.getItem(key)) { localStorage.setItem(key, "1"); setUnlock(true); }
-    } catch { /* storage unavailable */ }
-  }, [poster, p.status, p.id, w.badges.length]);
+      if (localStorage.getItem(key)) return false;
+      localStorage.setItem(key, "1");
+      return true;
+    } catch { return false; }
+  });
 
   return (
     <div className="flex flex-col gap-6 min-w-0" data-testid="ws-detail">

@@ -32,6 +32,7 @@ export default function Approvals() {
       <Modal open={Boolean(final)} onClose={() => setFinal(null)} title="Project complete">
         {final && (
           <div className="flex flex-col items-center text-center gap-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-brand">Project complete</p>
             <BadgeUnlock skill={final.badges.map((b) => b.skill).join(" and ")} />
             <h2 className="h3">{final.student.name.split(" ")[0]} finished {final.project.title}</h2>
             <p className="text-sm">Evidence approved by you is now on {final.student.name.split(" ")[0]}&apos;s profile. You can invite them to continue from your pipeline.</p>

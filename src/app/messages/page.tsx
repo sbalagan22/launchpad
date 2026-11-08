@@ -17,6 +17,9 @@ function Inbox() {
   const list = useQuery(hydrated ? `msg:list:${userId}` : null, () => messages.threads());
   const detail = useQuery(sel ? `msg:thread:${sel}` : null, () => messages.thread(sel!));
 
+  const unread = detail.data?.unread ?? 0;
+  useEffect(() => { if (sel && unread > 0) void messages.markRead(sel); }, [sel, unread]);
+
   if (list.error) return <PageContainer><ErrorState error={list.error} onRetry={list.refetch} /></PageContainer>;
   const items = list.data;
   const selected = sel && items?.some((i) => i.thread.id === sel) ? sel : null;

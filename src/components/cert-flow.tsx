@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { CheckCircle2 } from "lucide-react";
 import { DrawCheck } from "@/components/motion";
 import { Button, Input, Modal, Select, Stepper, WhatNext, toast, type StepState } from "@/components/ui";
@@ -17,7 +17,7 @@ const STEPS = [
 
 /** 3-step add flow: choose, choose method (issuer check or self-reported), result. */
 export function AddCertFlow({ open, onClose, catalog, initialCertId }: { open: boolean; onClose: () => void; catalog: CatalogEntry[]; initialCertId?: string }) {
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [step, setStep] = useState<1 | 2 | 3>(initialCertId ? 2 : 1);
   const [certId, setCertId] = useState(initialCertId ?? "");
   const [custom, setCustom] = useState("");
   const [method, setMethod] = useState<"issuer" | "self">("issuer");
@@ -28,7 +28,6 @@ export function AddCertFlow({ open, onClose, catalog, initialCertId }: { open: b
   const [outcome, setOutcome] = useState<null | { ok: true } | { ok: false; reason: string }>(null);
   const [busy, setBusy] = useState(false);
 
-  useEffect(() => { if (open) { setStep(initialCertId ? 2 : 1); setCertId(initialCertId ?? ""); setRef(""); setErr(null); setOutcome(null); setStates({}); setMethod("issuer"); setCustom(""); } }, [open, initialCertId]);
   const entry = catalog.find((c) => c.id === certId);
 
   const next = () => {

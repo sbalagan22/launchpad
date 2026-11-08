@@ -47,7 +47,7 @@ export function PublicProfile({ slug, own }: { slug: string; own?: boolean }) {
               </div>
             </div>
             <div className="flex flex-col items-center gap-2 text-center" data-testid="share">
-              {qr && /* eslint-disable-next-line @next/next/no-img-element */ <img src={qr} alt={`QR code for ${s.name}'s profile`} width={96} height={96} className="rounded-control border border-line" />}
+              {qr &&   <img src={qr} alt={`QR code for ${s.name}'s profile`} width={96} height={96} className="rounded-control border border-line" />}
               <Button variant="secondary" size="sm" onClick={copy}><Copy size={14} aria-hidden />Copy link</Button>
               <span className="text-[11px] text-muted break-all max-w-[160px]">/u/{s.slug}</span>
             </div>

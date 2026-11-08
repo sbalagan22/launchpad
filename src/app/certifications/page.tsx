@@ -101,7 +101,7 @@ export default function Certifications() {
       </section>
 
       <CertDrawer id={open} onClose={() => setOpen(null)} student={student} onVerify={(certId) => { setOpen(null); setAdding({ certId }); }} />
-      <AddCertFlow open={Boolean(adding)} onClose={() => setAdding(null)} catalog={all.data ?? []} initialCertId={adding?.certId} />
+      {adding && <AddCertFlow key={adding.certId ?? "new"} open onClose={() => setAdding(null)} catalog={all.data ?? []} initialCertId={adding.certId} />}
     </PageContainer>
   );
 }

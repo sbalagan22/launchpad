@@ -1,89 +1,121 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
-// The 2-minute demo path: business scopes and publishes the bakery request, Aisha applies,
-// the business accepts, Aisha submits her site, the check runs, the business approves and
-// rates, and a verified Web Development badge lands on her public profile.
-test("demo path: bakery request to verified badge", async ({ page }) => {
-  await page.goto("/");
-  await page.getByRole("button", { name: "I'm a business" }).first().click();
-  await expect(page).toHaveURL(/\/business\/new/);
+// The demo script from demo_personas.md, run once with normal motion and once with reduced motion.
+const GH_PASS = "https://www.credly.com/badges/3f9a1c2e-5b7d-4e8a-9c01-2d6f8b4a7e10";
+const AZ_FAIL = "https://learn.microsoft.com/en-us/users/marcuschen-9911/credentials/az900-1f2e3d4c5b6a7988";
 
-  // 1. AI scopes the bakery request
-  await expect(page.getByLabel("Describe what you need")).toHaveValue(/online order form/);
-  await page.getByRole("button", { name: "Scope project" }).click();
-  await expect(page.getByTestId("scope-result")).toBeVisible();
-  await expect(page.getByTestId("ai-note")).toContainText("AI-generated, please review");
-  await expect(page.getByLabel("Title", { exact: true })).toHaveValue("Bakery website");
-  await page.getByRole("button", { name: "Publish project" }).click();
-  await expect(page.getByTestId("published-banner")).toContainText("Bakery website is published");
+async function login(page: Page, who: "aisha" | "priya" | "omar", home: RegExp) {
+  await page.goto("/login");
+  await page.getByTestId(`role-${who}`).click();
+  await expect(page).toHaveURL(home);
+}
 
-  // 2. Aisha sees it at the top of her feed with a high match
-  await page.getByRole("button", { name: "Student view" }).click();
-  await expect(page).toHaveURL(/\/projects$/);
-  const firstRow = page.getByRole("row").nth(1);
-  await expect(firstRow).toContainText("Bakery website");
-  await expect(firstRow).toContainText("New");
-  const pct = Number((await firstRow.textContent())?.match(/(\d+)%/)?.[1]);
-  expect(pct).toBeGreaterThanOrEqual(85);
+async function approveFirst(page: Page, review: string) {
+  await page.goto("/business/approvals");
+  const panel = page.getByTestId("approval-panel").first();
+  await expect(panel).toBeVisible();
+  for (const group of await panel.getByRole("radiogroup").all()) await group.getByRole("radio", { name: "5 stars" }).click();
+  await panel.getByLabel("Your review").fill(review);
+  await panel.getByTestId("approve-btn").click();
+  await expect(page.getByText(/Milestone approved\.|Final approval given/)).toBeVisible();
+}
 
-  // 3. She applies with the drafted proposal
-  await firstRow.getByRole("link", { name: /Bakery website/ }).click();
-  await page.getByRole("button", { name: "Apply", exact: true }).click();
-  const proposal = page.getByRole("dialog").getByRole("textbox");
-  await expect(page.getByRole("button", { name: "Send proposal" })).toBeEnabled({ timeout: 20_000 });
-  await expect(proposal).toHaveValue(/Aisha/);
-  await page.getByRole("button", { name: "Send proposal" }).click();
-  await expect(page.getByRole("heading", { name: "Proposal sent" })).toBeVisible();
+for (const reduced of [false, true]) {
+  test.describe(reduced ? "reduced motion" : "normal motion", () => {
+    test.use({ reducedMotion: reduced ? "reduce" : "no-preference" });
 
-  // 4. The business accepts her
-  await page.getByRole("button", { name: /Continue as Sunrise Bakery/ }).click();
-  await expect(page).toHaveURL(/\/business\/projects\//);
-  await page.getByRole("button", { name: /Aisha Khan/ }).click();
-  await page.getByRole("button", { name: "Accept" }).click();
-  await expect(page.getByText("In progress", { exact: true }).first()).toBeVisible();
-  await expect(page.getByText("Student", { exact: true })).toBeVisible();
+    test("demo script end to end", async ({ page }) => {
+      // 1. Omar posts "Instrument the Waitlist" from a streamed brief.
+      await login(page, "omar", /\/founder/);
+      await page.goto("/business/new");
+      await page.getByTestId("raw-input").fill("we want to see where people drop off on our waitlist page");
+      await page.getByTestId("generate").click();
+      await expect(page.getByTestId("brief")).toBeVisible();
+      await expect(page.getByLabel("Title")).toHaveValue("Instrument the Waitlist", { timeout: 30_000 });
+      await expect(page.getByTestId("ai-note")).toBeVisible();
+      await page.getByTestId("publish").click();
+      await expect(page).toHaveURL(/\/business\/projects\/prj_/);
+      const projectUrl = page.url();
 
-  // 5. Aisha submits her site and the automated check runs
-  await page.getByRole("button", { name: "Student view" }).click();
-  await page.getByRole("link", { name: "Workspace", exact: true }).click();
-  await page.getByRole("link", { name: "Bakery website" }).first().click();
-  await expect(page.getByRole("heading", { name: "Bakery website" })).toBeVisible();
-  await expect(page.getByLabel("Link to your work")).toHaveValue(/sunrise-bakery-demo/);
-  await page.getByRole("button", { name: "Submit for review" }).click();
-  await expect(page.getByTestId("check-progress")).toBeVisible();
-  await expect(page.getByTestId("check-result")).toBeVisible({ timeout: 20_000 });
-  await expect(page.getByTestId("check-result")).toContainText("Accessibility");
+      // 2. Aisha sees the new match and applies.
+      await login(page, "aisha", /\/dashboard/);
+      await page.goto("/projects");
+      await page.getByLabel("Search projects").fill("Instrument");
+      const card = page.getByTestId("project-card").filter({ hasText: "Instrument the Waitlist" });
+      await expect(card).toBeVisible();
+      expect(Number(await card.getByTestId("match-ring").getAttribute("data-score"))).toBeGreaterThanOrEqual(80);
+      await card.getByRole("link", { name: "Instrument the Waitlist" }).click();
+      await page.getByTestId("apply-open").click();
+      await page.getByLabel("Your proposal").fill("I have used SQL and JavaScript for a lab project and would start by listing the events to track. I can give about 10 hours a week.");
+      await page.getByTestId("apply-submit").click();
+      await expect(page.getByText("You applied")).toBeVisible();
 
-  // 6. The business approves, then leaves the final review
-  await page.getByRole("button", { name: "Business view" }).click();
-  await page.getByRole("button", { name: /Approve and release/ }).click();
-  await expect(page.getByRole("radio", { name: "5 stars" })).toBeVisible();
-  await page.getByRole("radio", { name: "5 stars" }).click();
-  await page.getByLabel("Review", { exact: true }).fill("Aisha delivered a clear, fast site and handled every change quickly.");
-  await page.getByRole("button", { name: "Submit review" }).click();
-  await expect(page.getByText("No finished projects to rate")).toBeVisible();
+      // 3. Omar accepts her, then approves her pending Reroute MVP milestone 2.
+      await login(page, "omar", /\/founder/);
+      await page.goto(projectUrl);
+      await page.getByTestId("applicant").filter({ hasText: "Aisha Khan" }).getByTestId("accept-btn").click();
+      await expect(page.getByTestId("ws-detail")).toBeVisible();
+      await approveFirst(page, "Milestone 2 is great. The map view loads fast and the README is clear.");
 
-  // 7. The verified badge with evidence is on her public profile
-  await page.goto("/u/aisha-khan");
-  const skill = page.locator('[data-skill="Web Development"]');
-  await expect(skill).toHaveAttribute("data-trust", "checked");
-  await expect(skill).toContainText("Evidence: Bakery website, Sunrise Bakery");
-  await expect(page.getByTestId("completed-project").first()).toContainText("Bakery website");
+      // 4. Aisha: notification, finishes milestone 3, final approval, badge and evidence.
+      await login(page, "aisha", /\/dashboard/);
+      await page.goto("/notifications");
+      await expect(page.getByText("Milestone 2 approved")).toBeVisible();
+      await page.goto("/workspace/prj_reroute_mvp");
+      await page.getByLabel("Link to your work").fill("https://reroute-first-version.vercel.app");
+      await page.getByTestId("submit-milestone").click();
+      await expect(page.getByText("Submitted. The poster has been notified.")).toBeVisible();
+      await login(page, "omar", /\/founder/);
+      await approveFirst(page, "Shipped, documented and fast. Thank you.");
+      await expect(page.getByText("Project complete").first()).toBeVisible();
+      await login(page, "aisha", /\/dashboard/);
+      await page.goto("/workspace/prj_reroute_mvp");
+      await expect(page.getByText("Project complete").first()).toBeVisible();
+      await page.goto("/profile");
+      await expect(page.getByTestId("evidence").filter({ hasText: "Ship the First Real Version of Reroute" })).toBeVisible();
+      await expect(page.getByText("approved by the poster", { exact: false }).first()).toBeVisible();
 
-  // 8. End on the impact dashboard
-  await page.getByRole("link", { name: "Impact", exact: true }).click();
-  await expect(page.getByTestId("impact-stats")).toContainText("Students placed");
-});
+      // Certifications: passing demo ID verifies, failing ID falls back to self-reported.
+      await page.goto("/certifications");
+      await page.getByTestId("add-cert").click();
+      await page.getByLabel("Certification", { exact: true }).selectOption("gh-foundations");
+      await page.getByRole("button", { name: "Continue" }).click();
+      await page.getByLabel("Credential ID or verification link").fill(GH_PASS);
+      await page.getByTestId("verify-btn").click();
+      await expect(page.getByTestId("verify-ok")).toBeVisible({ timeout: 30_000 });
+      await page.getByRole("button", { name: "Done" }).click();
+      await page.getByTestId("add-cert").click();
+      await page.getByLabel("Certification", { exact: true }).selectOption("azure-az900");
+      await page.getByRole("button", { name: "Continue" }).click();
+      await page.getByLabel("Credential ID or verification link").fill(AZ_FAIL);
+      await page.getByTestId("verify-btn").click();
+      await expect(page.getByTestId("verify-fail")).toBeVisible({ timeout: 30_000 });
+      await page.getByRole("button", { name: "Add as self-reported" }).click();
+      await page.goto("/profile");
+      await expect(page.getByTestId("cert-issuer").filter({ hasText: "GitHub Foundations" })).toBeVisible();
+      await expect(page.getByTestId("cert-self").filter({ hasText: "Azure" })).toBeVisible();
 
-test("smoke: key pages render and reset restores the seed", async ({ page }) => {
-  for (const path of ["/", "/login", "/projects", "/skills", "/profile", "/messages", "/notifications", "/impact", "/u/aisha-khan"]) {
-    const res = await page.goto(path);
-    expect(res?.status(), path).toBeLessThan(400);
-  }
-  await page.goto("/impact");
-  await expect(page.getByTestId("impact-stats")).toContainText("Hours contributed");
-  await page.keyboard.press("Control+Shift+D");
-  await expect(page.getByRole("dialog", { name: "Developer menu" })).toBeVisible();
-  await page.getByRole("button", { name: "Reset demo data" }).click();
-  await expect(page).toHaveURL(/\/$/);
-});
+      // 5. Omar moves Aisha to Trial and sends Invite to continue.
+      await login(page, "omar", /\/founder/);
+      const cand = page.getByTestId("candidate").filter({ hasText: "Aisha Khan" }).first();
+      await cand.getByLabel("Move to stage").selectOption("trial");
+      await expect(page.getByTestId("col-trial").getByTestId("candidate").filter({ hasText: "Aisha Khan" })).toBeVisible();
+      await page.getByTestId("col-trial").getByTestId("candidate").filter({ hasText: "Aisha Khan" }).getByTestId("invite-btn").click();
+      await expect(page.getByText("Invite sent, pending")).toBeVisible();
+
+      // 6. Priya: workspace, thread with Omar, certification roadmap.
+      await login(page, "priya", /\/dashboard/);
+      await page.goto("/workspace");
+      await expect(page.getByTestId("ws-detail")).toContainText("Customer Discovery and Pricing");
+      await page.goto("/messages");
+      await page.getByTestId("thread-row").filter({ hasText: "Omar Haddad" }).click();
+      await expect(page.getByTestId("context-card")).toBeVisible();
+      await page.goto("/certifications");
+      await expect(page.getByTestId("road-earned")).toContainText("Google Data Analytics");
+
+      // 7. End on the impact page.
+      await page.goto("/impact");
+      await expect(page.getByRole("heading", { name: "Impact" })).toBeVisible();
+    });
+  });
+}

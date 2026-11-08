@@ -114,8 +114,9 @@ export interface ApprovalsApi {
 
 export interface MessagesApi {
   threads(): Promise<ThreadSummary[]>;
-  /** Opening a thread marks it read for the signed-in user. */
+  /** Call markRead when a thread is opened. */
   thread(threadId: string): Promise<ThreadDetail>;
+  markRead(threadId: string): Promise<void>;
   send(threadId: string, text: string, attachments?: string[]): Promise<ThreadDetail>;
   /** Finds or creates a thread with the other party (optionally about a project). */
   start(otherId: string, projectId?: string): Promise<ThreadDetail>;

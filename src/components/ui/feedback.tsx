@@ -122,7 +122,6 @@ export function MatchRing({ score, size = 48 }: { score: number; size?: number }
     <span data-testid="match-ring" data-score={score} className="inline-flex flex-none">
       <AnimatedRing value={score} size={size} stroke={size > 44 ? 5 : 4} label={`Match score ${score} out of 100`}>
         {score}
-        <span className="text-[0.6em] font-medium">%</span>
       </AnimatedRing>
     </span>
   );

@@ -1,37 +1,24 @@
-# Data and services notes (Person A)
+# Notes
 
-Branch: `york-data`. Contract: `src/services/contract.ts` (names and signatures frozen; add, never rename).
+## What changed
+- Removed the reviewer role, rubric review, skill yield score, search bar and Cmd+K palette, footer, the startups directory page and the old demo roles. Match score is the only score.
+- Posters approve milestones: they rate each acceptance criterion (1 to 5) and write a short review. Approving the last milestone completes the project, issues badges and creates the review.
+- Seed data rebuilt from `demo_personas.md` (24 students, 13 posters plus 10 ventures, 60 projects, 104 applications, 30 threads, 39 notifications, 16-entry catalog, hiring pipeline with 4 invites).
+- New services: `approvals`, `messages`. `scoping` suggests improvements without scores. `projects.checkPublish` lists missing items.
+- New pages: workspace, messages, founder dashboard and pipeline, business projects, approvals, poster flow, certifications (roadmap, catalog, drawer, pathways, add flow), public profile with QR, venture profile, filter side panel on the feed.
+- Logo: `public/Launchpad_logo.png` (transparent) is used everywhere, including the favicon.
 
-## Status
-- All services in `src/services/index.ts` are implemented against the frozen contract (auth, admin, projects, scoping, applications, workspace, review, certs, startups, pipeline, profile, impact, matching, search, notifications).
-- Checks that pass: `npm run typecheck:data`, `npm run validate` (referential integrity over the seed), `npm run test:unit` (22 tests: skill yield, matching cert boost, SSRF guard, pipeline transitions, publish gate, pay rules, issuer verification pass and fail).
-- The full `npm run typecheck` includes the old pages and components and stays red until the UI migrates to the contract (Person B).
+## Schema changes
+`Reviewer`, `Evaluation`, `rubric` and `reviewerIds` are gone. Added `Approval`, `acceptance`, `difficulty`, `locationMode`, thread `unread` and message `attachments`, venture `location`, `foundedAt`, `waitlist`, student `city`, `github`, `linkedin`, `languages`, `interests`, cert claim `note`, `targetDate`, invite `status`. Session role is `student | business`.
 
-## Mocked
-- Everything runs on seeded data in the browser (Zustand persist). Latency is simulated (300 to 900 ms).
-- Poster-side scoping streams pre-written briefs (`DEMO_SCRIPTS`) unless `USE_REAL_AI=true` (then `/api/ai/scope`, validated with Zod, mock fallback on any error).
-- Issuer verification is a deterministic mock over each catalog entry's `demoIds` plus format patterns, unless `USE_REAL_VERIFY=true` (then `/api/verify`, SSRF-guarded allowlist, never falls back silently).
-- Payouts are visual only. York email check is a regex, with demo accounts bypassing it.
+## Fell short of the targets
+- Workspaces: 32 (target 40). Reviews: 19 (target 35), because reviews exist only for completed projects and 27 projects must stay open for a rich feed.
+- Descriptions are 104 to 177 words (target 150 to 250); the shortest are on the simpler projects.
+- Applications: 104 (target 90), because each startup pipeline needs 6 or more candidates.
+- Instrument the Waitlist scores 81 to 88 for Aisha depending on the date.
 
 ## Known gaps
-- Catalog entries with unconfirmed verification method: isc2-cc, pcep, pcap, cka-kcna, tf-assoc (flagged `verificationConfirmed: false`).
-- Real verification only parses a small allowlist of issuer hosts, and the page markup may change.
-- The old `/api/ai/proposal` route and `lib/ai-server.ts` proposal helper are leftovers; students get no AI-made deliverables or proposals from the new contract (`applications.draftProposal` is a template).
-
-## Schema changes (read these)
-- `ProjectStatus` now includes `"draft"`. `projects.create` makes a draft, `projects.publish` opens it (skill yield >= 60 required).
-- `HiringEntry.applicationId` added (optional).
-- Skills trust is `"reviewed" | "self"`. Certification tier is `"issuer" | "self"` and status is `"earned" | "in_progress" | "planned"`.
-- `Business.kind` is gone: use `employerType`, `alumniOwned`, `nearCampus`. `Student.school` is gone: use `program`, `faculty`, `campus`.
-- `Db` gained `reviewers, ventures, evaluations, pipeline, saved, catalog` (certifications renamed to `catalog`).
-- `CheckResult` is reachability only (`ok | slow | unreachable`). There are no quality scores.
-- Session role is `"student" | "business" | "reviewer"`. `auth.loginDemo("poster" | "founder")` both map to `business`.
-- New views live in `src/schemas/views.ts`. `Match` is now `{ score, breakdown }` (was `{ percent, ... }`).
-
-## Other files touched outside the ownership list
-- `src/lib/trust.ts` (skill trust helper, tied to the schema change), `package.json` (scripts, vitest), `tsconfig.data.json`.
-- `src/app/api/ai/scope`, `src/app/api/verify` (server routes), `src/lib/verify-*.ts`, `vitest.config.mts`.
-- `src/store/index.ts`: demo ids for the founder and reviewer accounts.
-
-## Demo accounts
-student `stu_aisha`, poster `biz_corner` (Corner Press Coffee), founder `biz_reroute` (Reroute), reviewer `rev_noor`.
+- No pagination beyond "load more" on the feed.
+- Mobile layouts under 400px were not audited page by page.
+- Messages attachments are labels only.
+- Real verification parsing depends on issuer page markup.

@@ -27,12 +27,14 @@ export const messages: MessagesApi = {
     return read(z.array(ThreadSummary), (db) => mine(db).map((t) => summary(db, t)).sort((a, b) => b.last.at.localeCompare(a.last.at)));
   },
   async thread(id) {
-    return write(ThreadDetail, (db) => {
+    return read(ThreadDetail, (db) => {
       const t = mine(db).find((x) => x.id === id);
       if (!t) throw new ServiceError("not_found", "That conversation does not exist.");
-      const next = { ...t, unread: { ...t.unread, [side()]: 0 } };
-      return { db: { ...db, threads: db.threads.map((x) => (x.id === id ? next : x)) }, result: detail(db, next) };
+      return detail(db, t);
     });
+  },
+  async markRead(id) {
+    await write(z.literal(true), (db) => ({ db: { ...db, threads: db.threads.map((x) => (x.id === id && mine(db).some((m) => m.id === id) ? { ...x, unread: { ...x.unread, [side()]: 0 } } : x)) }, result: true as const }));
   },
   async send(threadId, text, attachments = []) {
     const t = parseInput(z.string().trim().min(1, "Write a message first.").max(2000), text);
