@@ -62,6 +62,7 @@ export const projects: ProjectsApi = {
         .filter((p) => !f.deadlineBefore || p.deadline <= f.deadlineBefore)
         .filter((p) => !f.skills?.length || has([...p.skills, ...p.tools], f.skills))
         .filter((p) => !f.type?.length || f.type.includes(p.type))
+        .filter((p) => !f.strengthenedBy?.length || f.strengthenedBy.some((c) => p.strengthenedBy.includes(c)))
         .filter((p) => !f.difficulty?.length || f.difficulty.includes(p.difficulty))
         .filter((p) => !f.locationMode?.length || f.locationMode.includes(p.locationMode))
         .filter((p) => !f.ventureId || p.ventureId === f.ventureId)

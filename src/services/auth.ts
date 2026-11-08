@@ -57,7 +57,7 @@ export const auth: AuthApi = {
     let slug = slugify(v.name);
     if (db.students.some((s) => s.slug === slug)) slug = `${slug}-${db.students.length + 1}`;
     const s: Student = {
-      id: newId("stu"), slug, name: v.name, email: v.email, yorkVerified: true, program: v.program, faculty: v.faculty, year: v.year, campus: v.campus, bio: "", hoursPerWeek: v.hoursPerWeek, pref: v.pref,
+      id: newId("stu"), slug, name: v.name, email: v.email, yorkVerified: true, program: v.program, faculty: v.faculty, year: v.year, campus: v.campus, bio: "", hoursPerWeek: v.hoursPerWeek, pref: v.pref, city: "Toronto", languages: ["English"], interests: [],
       skills: v.skills.map((name) => ({ name, level: "Beginner" as const, trust: "self" as const, evidence: [] })), createdAt: daysFromNow(0),
     };
     useApp.getState().commit((d) => ({ ...d, students: [...d.students, s] }));

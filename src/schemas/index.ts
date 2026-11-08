@@ -78,6 +78,11 @@ export const Student = z.object({
   hoursPerWeek: z.number().int().min(1).max(40),
   pref: AvailabilityPref,
   portfolioUrl: z.string().optional(),
+  city: z.string().default("Toronto"),
+  github: z.string().optional(),
+  linkedin: z.string().optional(),
+  languages: z.array(z.string()).default(["English"]),
+  interests: z.array(z.string()).default([]),
   skills: z.array(SkillEntry),
   createdAt: IsoDate,
 });

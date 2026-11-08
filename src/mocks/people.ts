@@ -7,6 +7,13 @@ const sk = (name: string, level: Level): SkillEntry => ({ name, level, trust: "s
 const L = { s: "Advanced", m: "Intermediate", b: "Beginner" } as const;
 const S = (spec: string): SkillEntry[] => spec.split(",").map((x) => { const [n, l] = x.trim().split(":"); return sk(n, L[l as "s" | "m" | "b"]); });
 
+const CITY: Record<string, string> = { stu_aisha: "Brampton", stu_priya: "Toronto", stu_daniel: "North York", stu_mei: "Scarborough", stu_chloe: "Toronto (Glendon)", stu_isabelle: "Toronto (Glendon)" };
+const LANGS: Record<string, string[]> = { stu_aisha: ["English", "Urdu", "Punjabi"], stu_priya: ["English", "Hindi", "Malayalam"], stu_mei: ["English", "Mandarin"], stu_chloe: ["French", "English"], stu_isabelle: ["French", "English"], stu_daniel: ["English", "Twi"] };
+const INTERESTS: Record<Faculty, string[]> = {
+  Lassonde: ["Open source", "Hackathons", "Transit tech"], Schulich: ["Early-stage startups", "Customer research", "Pricing"], "LA&PS": ["Plain language", "Policy", "Community media"], AMPD: ["Brand design", "Motion", "Print"],
+  Science: ["Reproducible research", "Data viz", "Field work"], Health: ["Community health", "Program evaluation", "Patient education"], Education: ["Tutoring", "Curriculum design", "Newcomer support"], EUC: ["Climate data", "Urban planning", "GIS"], Glendon: ["Bilingual services", "Translation", "Public policy"],
+};
+
 type Row = [id: string, name: string, program: string, faculty: Faculty, year: number, hours: number, pref: Student["pref"], skills: string, bio: string, ago: number, campus?: "Glendon"];
 
 export function seedStudents(): Student[] {
@@ -40,6 +47,11 @@ export function seedStudents(): Student[] {
     id, slug: name.toLowerCase().replace(/[^a-z ]/g, "").replace(/ /g, "-"), name,
     email: `${name.toLowerCase().replace(/[^a-z ]/g, "").replace(/ /g, ".")}@my.yorku.ca`, yorkVerified: true, program, faculty, year, campus: campus ?? "Keele",
     bio, hoursPerWeek: hours, pref, skills: S(skills), createdAt: daysFromNow(-ago),
+    city: CITY[id] ?? ["Toronto", "North York", "Vaughan", "Mississauga", "Brampton", "Markham", "Scarborough"][name.length % 7],
+    github: id === "stu_aisha" || /^(stu_daniel|stu_liam|stu_ravi|stu_arjun|stu_omid|stu_grace)$/.test(id) ? `https://github.com/${name.toLowerCase().replace(/[^a-z]/g, "")}` : undefined,
+    linkedin: `https://www.linkedin.com/in/${name.toLowerCase().replace(/[^a-z ]/g, "").replace(/ /g, "-")}-demo`,
+    languages: LANGS[id] ?? ["English"],
+    interests: INTERESTS[faculty],
     ...(id === "stu_aisha" ? { portfolioUrl: "https://aisha-khan.dev" } : {}),
   }));
 }

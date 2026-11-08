@@ -40,6 +40,8 @@ export type ProjectFilters = {
   type?: ProjectType[];
   q?: string;
   ventureId?: string;
+  /** Only projects that list this certification as one that strengthens an application. */
+  strengthenedBy?: string[];
   status?: Project["status"][];
   difficulty?: Difficulty[];
   locationMode?: LocationMode[];

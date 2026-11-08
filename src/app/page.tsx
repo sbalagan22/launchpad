@@ -106,8 +106,8 @@ function StartupBand() {
               <h2 id="startups-h" className="text-[28px] sm:text-[40px] leading-[1.15] tracking-[-0.02em] font-semibold mb-3 text-white">Build with York&apos;s startups</h2>
               <p className="text-white/80">Work on a real product with a founder, get your work approved by the founder, and if it goes well, get invited to continue.</p>
             </div>
-            <Button href="/startups" variant="secondary">
-              See all startups <ArrowRight size={16} aria-hidden />
+            <Button href="/projects?employer=yspace_startup" variant="secondary">
+              See startup projects <ArrowRight size={16} aria-hidden />
             </Button>
           </div>
         </Reveal>

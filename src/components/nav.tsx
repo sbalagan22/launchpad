@@ -32,7 +32,6 @@ export function LandingNav() {
         <Logo />
         <nav aria-label="Primary" className="hidden md:flex gap-2">
           <Link href="/projects" className={LINK}>Projects</Link>
-          <Link href="/startups" className={LINK}>Startups</Link>
           <Link href="/certifications" className={LINK}>Certifications</Link>
           <Link href="/impact" className={LINK}>Impact</Link>
         </nav>
@@ -49,7 +48,6 @@ const NAV: Record<Kind, { label: string; href: string }[]> = {
   student: [
     { label: "Dashboard", href: "/dashboard" },
     { label: "Projects", href: "/projects" },
-    { label: "Startups", href: "/startups" },
     { label: "Workspace", href: "/workspace" },
     { label: "Certifications", href: "/certifications" },
     { label: "Messages", href: "/messages" },
@@ -58,7 +56,6 @@ const NAV: Record<Kind, { label: string; href: string }[]> = {
     { label: "Dashboard", href: "/founder" },
     { label: "Projects", href: "/business" },
     { label: "Approvals", href: "/business/approvals" },
-    { label: "Startups", href: "/startups" },
     { label: "Messages", href: "/messages" },
     { label: "Impact", href: "/impact" },
   ],

@@ -19,7 +19,7 @@ export default function Venture({ params }: { params: Promise<{ id: string }> })
   const v = data.venture;
   return (
     <PageContainer>
-      <nav aria-label="Breadcrumb" className="text-sm mb-4"><Link href="/startups">Startups</Link> / {v.name}</nav>
+      <nav aria-label="Breadcrumb" className="text-sm mb-4"><Link href="/projects">Projects</Link> / {v.name}</nav>
       <Reveal>
         <div className="flex items-start gap-5 mb-8 flex-wrap">
           <span aria-hidden className="w-16 h-16 rounded-card bg-brand text-white grid place-items-center text-2xl font-bold">{v.name[0]}</span>
