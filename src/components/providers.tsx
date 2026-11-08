@@ -2,9 +2,10 @@
 
 import { useEffect, type ReactNode } from "react";
 import { useApp } from "@/store";
-import { Toaster } from "@/components/ui";
+import { Toaster, CommandPalette } from "@/components/ui";
 import { Shell } from "@/components/nav";
 import { DevMenu } from "@/components/dev-menu";
+import { MotionRoot } from "@/components/motion";
 
 export function Providers({ children }: { children: ReactNode }) {
   useEffect(() => {
@@ -12,10 +13,11 @@ export function Providers({ children }: { children: ReactNode }) {
     Promise.resolve(useApp.persist.rehydrate()).finally(() => useApp.getState().markHydrated());
   }, []);
   return (
-    <>
+    <MotionRoot>
       <Shell>{children}</Shell>
       <DevMenu />
+      <CommandPalette />
       <Toaster />
-    </>
+    </MotionRoot>
   );
 }
