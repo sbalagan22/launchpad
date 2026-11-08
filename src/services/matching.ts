@@ -1,5 +1,15 @@
+import { MatchSchema } from "@/schemas/views";
+import { computeMatch } from "@/lib/matching";
 import type { MatchingApi } from "./contract";
-import { stubApi } from "./core";
+import { ServiceError, read } from "./core";
 
-// STUB: replaced by the real implementation shortly. Rejects with ServiceError("not_implemented").
-export const matching: MatchingApi = stubApi<MatchingApi>("matching");
+export const matching: MatchingApi = {
+  async matchFor(studentId, projectId) {
+    return read(MatchSchema, (db) => {
+      const s = db.students.find((x) => x.id === studentId);
+      const p = db.projects.find((x) => x.id === projectId);
+      if (!s || !p) throw new ServiceError("not_found", "Student or project not found.");
+      return computeMatch(s, p, db.certClaims.filter((c) => c.studentId === s.id), db.catalog);
+    });
+  },
+};

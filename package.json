@@ -9,6 +9,7 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "validate:mocks": "tsx scripts/validate-mocks.ts",
+    "validate": "tsx scripts/validate-mocks.ts",
     "test:e2e": "playwright test",
     "typecheck:data": "tsc --noEmit -p tsconfig.data.json",
     "test:unit": "vitest run"
