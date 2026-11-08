@@ -16,4 +16,4 @@ export { notifications } from "./notifications";
 export { admin } from "./admin";
 export { ServiceError } from "./core";
 export type * from "./contract";
-export type { ThreadDetail, ThreadSummary, PendingApproval, FinalApproval, ApprovalResult, WorkspaceSummary, WorkspaceView, BusinessStats, VenturePage, PipelineCard as PipelineCardView, PipelineView, ClaimView, CertDetail, Pathway, ProfileView } from "@/schemas/views";
+export type { ApplicationView, ThreadDetail, ThreadSummary, PendingApproval, FinalApproval, ApprovalResult, WorkspaceSummary, WorkspaceView, BusinessStats, VenturePage, PipelineCard as PipelineCardView, PipelineView, ClaimView, CertDetail, Pathway, ProfileView } from "@/schemas/views";
