@@ -3,47 +3,57 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Briefcase, ClipboardCheck, GraduationCap, Rocket } from "lucide-react";
 import { Logo } from "@/components/nav";
-import { Button, Card, Input, Segmented, toast } from "@/components/ui";
-import { misc, ServiceError } from "@/services";
-import { DEMO_BUSINESS_ID, DEMO_STUDENT_ID } from "@/store";
+import { Button, Card, toast } from "@/components/ui";
+import { Stagger } from "@/components/motion";
+import { HOME } from "@/components/use-me";
+import { auth, type DemoRole } from "@/services";
 
-// MOCK: there is no authentication. Any submit signs in as the seeded user for the chosen role.
+const ROLES: { role: DemoRole; icon: typeof Rocket; title: string; who: string; body: string }[] = [
+  { role: "student", icon: GraduationCap, title: "Student", who: "Aisha Khan, Lassonde", body: "Browse matched projects, apply, submit milestones and add certifications." },
+  { role: "poster", icon: Briefcase, title: "Poster", who: "Corner Press Coffee", body: "Describe a need, publish a scoped brief and accept applicants." },
+  { role: "reviewer", icon: ClipboardCheck, title: "Reviewer", who: "Noor, York reviewer", body: "Score submissions against the rubric and approve or request changes." },
+  { role: "founder", icon: Rocket, title: "Founder", who: "Reroute, YSpace venture", body: "Run a hiring pipeline and invite strong students to continue." },
+];
+
+// MOCK: there is no authentication. Each card signs in as a seeded demo user for that role.
 export default function Login() {
   const router = useRouter();
-  const [role, setRole] = useState<"student" | "business">("student");
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState<DemoRole | null>(null);
 
-  const go = async (r: "student" | "business") => {
-    setBusy(true);
-    setError(null);
+  const go = async (role: DemoRole) => {
+    setBusy(role);
     try {
-      await misc.signIn({ role: r, userId: r === "student" ? DEMO_STUDENT_ID : DEMO_BUSINESS_ID });
-      toast.success(r === "student" ? "Signed in as Aisha Khan." : "Signed in as Sunrise Bakery.");
-      router.push(r === "student" ? "/projects" : "/business");
+      await auth.loginDemo(role);
+      router.push(HOME[role]);
     } catch (e) {
-      setError(e instanceof ServiceError ? e.message : "Could not sign in.");
-      setBusy(false);
+      toast.error(e instanceof Error ? e.message : "Could not sign in");
+      setBusy(null);
     }
   };
 
   return (
-    <div className="min-h-screen bg-surface grid place-items-center px-6 py-12">
-      <div className="w-full max-w-[420px] flex flex-col gap-6">
-        <div className="flex justify-center"><Logo /></div>
-        <Card className="p-8">
-          <h1 className="h2 mb-1">Log in</h1>
-          <p className="text-sm mb-6">Demo mode: no password is checked.</p>
-          <form onSubmit={(e) => { e.preventDefault(); void go(role); }} className="flex flex-col gap-4">
-            <Segmented label="Account type" value={role} onChange={setRole} options={[{ value: "student", label: "Student" }, { value: "business", label: "Business or nonprofit" }]} />
-            <Input label="Email" type="email" key={`e-${role}`} defaultValue={role === "student" ? "aisha.khan@yorku.ca" : "hello@sunrisebakery.ca"} autoComplete="email" />
-            <Input label="Password" type="password" defaultValue="launchpad-demo" autoComplete="current-password" />
-            {error && <p role="alert" className="text-sm text-bad">{error}</p>}
-            <Button type="submit" loading={busy} full>Log in</Button>
-          </form>
-        </Card>
-        <p className="text-sm text-center">New here? <Link href="/onboarding/student" className="font-semibold">Create a student profile</Link> or <Link href="/onboarding/business" className="font-semibold">register a business</Link>.</p>
+    <div className="min-h-screen bg-surface">
+      <div className="max-w-[960px] mx-auto px-6 py-10">
+        <Logo />
+        <h1 className="h1 mt-12 mb-3">Choose a demo role</h1>
+        <p className="mb-8 max-w-xl">There are no passwords in this demo. Pick a role to explore the product as that person. Real students sign up with a York email on the <Link href="/onboarding/student">student sign-up</Link>.</p>
+        <Stagger className="grid sm:grid-cols-2 gap-4">
+          {ROLES.map((r) => (
+            <Card key={r.role} className="p-6 flex flex-col gap-3 h-full">
+              <r.icon size={22} className="text-brand" aria-hidden />
+              <div>
+                <h2 className="text-lg font-semibold text-ink">{r.title}</h2>
+                <p className="text-xs">{r.who}</p>
+              </div>
+              <p className="text-sm flex-1">{r.body}</p>
+              <Button onClick={() => go(r.role)} loading={busy === r.role} disabled={busy !== null} data-testid={`role-${r.role}`}>
+                Continue as {r.title.toLowerCase()}
+              </Button>
+            </Card>
+          ))}
+        </Stagger>
       </div>
     </div>
   );

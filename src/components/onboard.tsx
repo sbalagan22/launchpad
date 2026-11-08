@@ -1,39 +1,29 @@
-import type { ReactNode } from "react";
-import { Check } from "lucide-react";
-import { Logo } from "@/components/nav";
-import { Button, cx } from "@/components/ui";
+"use client";
 
-/** Two-column onboarding layout from the design: step rail on the left, one question per step on the right. */
-export function OnboardShell({ heading, steps, step, title, sub, children, onNext, onBack, nextLabel, nextDisabled, loading }: {
-  heading: string; steps: string[]; step: number; title: string; sub: string; children: ReactNode;
-  onNext: () => void; onBack: () => void; nextLabel: string; nextDisabled?: boolean; loading?: boolean;
-}) {
+import type { ReactNode } from "react";
+import { Logo } from "@/components/nav";
+import { Button, Card, Stepper } from "@/components/ui";
+
+/** Shared frame for sign-up flows: stepper on the side, one question at a time. */
+export function OnboardShell({ heading, steps, step, title, sub, children, onNext, onBack, nextLabel = "Continue", loading, nextDisabled }: { heading: string; steps: string[]; step: number; title: string; sub: string; children: ReactNode; onNext: () => void; onBack: () => void; nextLabel?: string; loading?: boolean; nextDisabled?: boolean }) {
   return (
-    <div className="min-h-screen flex flex-wrap">
-      <aside className="flex-[1_1_320px] bg-surface md:border-r border-b md:border-b-0 border-line px-6 md:px-12 py-8">
-        <div className="mb-16"><Logo /></div>
-        <div className="text-xs font-medium mb-4">{heading}</div>
-        <ol className="flex flex-col gap-4 list-none p-0 m-0">
-          {steps.map((label, i) => (
-            <li key={label} aria-current={i === step ? "step" : undefined} className={cx("flex gap-4 items-center text-sm", i === step ? "font-semibold text-ink" : i < step ? "text-ink" : "text-body")}>
-              <span className={cx("w-4 h-4 rounded border grid place-items-center", i < step ? "border-brand bg-brand text-white" : i === step ? "border-ink" : "border-muted")}>{i < step && <Check size={12} aria-hidden />}</span>
-              {label}
-            </li>
-          ))}
-        </ol>
-      </aside>
-      <section className="flex-[2_1_480px] px-6 md:px-12 pt-16 md:pt-24 pb-12">
-        <div className="max-w-[560px]">
-          <div className="text-xs font-medium mb-2">Step {step + 1} of {steps.length}</div>
-          <h1 className="h2 mb-2">{title}</h1>
-          <p className="mb-8">{sub}</p>
-          <div className="mb-12">{children}</div>
-          <div className="flex gap-4 items-center">
-            <Button onClick={onNext} disabled={nextDisabled} loading={loading}>{nextLabel}</Button>
-            <Button variant="secondary" onClick={onBack} className={step === 0 ? "invisible" : ""} aria-hidden={step === 0} tabIndex={step === 0 ? -1 : 0}>Back</Button>
-          </div>
+    <div className="min-h-screen bg-surface">
+      <div className="max-w-[880px] mx-auto px-6 py-10">
+        <Logo />
+        <h1 className="h2 mt-10 mb-6">{heading}</h1>
+        <div className="grid md:grid-cols-[220px_1fr] gap-8 items-start">
+          <Stepper label="Sign-up progress" steps={steps.map((s, i) => ({ id: s, label: s, state: i < step ? "ok" : i === step ? "running" : "pending" }))} />
+          <Card className="p-8">
+            <h2 className="h3 mb-1">{title}</h2>
+            <p className="text-sm mb-6">{sub}</p>
+            {children}
+            <div className="flex justify-between mt-8">
+              <Button variant="ghost" onClick={onBack} disabled={step === 0}>Back</Button>
+              <Button onClick={onNext} loading={loading} disabled={nextDisabled} data-testid="onboard-next">{nextLabel}</Button>
+            </div>
+          </Card>
         </div>
-      </section>
+      </div>
     </div>
   );
 }

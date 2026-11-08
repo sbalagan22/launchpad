@@ -1,7 +1,9 @@
+"use client";
+
 import { useId, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from "react";
 import { cx } from "./primitives";
 
-const FIELD = "w-full border border-line rounded-control bg-white text-sm text-ink outline-none transition-colors focus:border-brand placeholder:text-muted disabled:bg-surface";
+const FIELD = "w-full border border-line rounded-control bg-white text-sm text-ink outline-none transition-colors focus:border-brand focus-visible:outline-2 focus-visible:outline-brand placeholder:text-muted disabled:bg-surface";
 
 type FieldProps = { label: string; hint?: string; error?: string | null; hideLabel?: boolean; children: (p: { id: string; describedBy?: string; invalid: boolean }) => ReactNode };
 

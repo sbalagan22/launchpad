@@ -3,11 +3,11 @@ import { Hanken_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 
-const hanken = Hanken_Grotesk({ variable: "--font-hanken", subsets: ["latin"], weight: ["400", "500", "600"], display: "swap" });
+const hanken = Hanken_Grotesk({ variable: "--font-hanken", subsets: ["latin"], weight: ["400", "500", "600", "700"], display: "swap" });
 
 export const metadata: Metadata = {
   title: { default: "Launchpad", template: "%s | Launchpad" },
-  description: "Your first real experience, verified. Complete scoped projects for local businesses and nonprofits and earn skills employers can trust.",
+  description: "Your first real experience, verified. Scoped, reviewed projects for York students, from local businesses, nonprofits and YSpace startups.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
